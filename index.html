@@ -1,115 +1,572 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portfolio – BOKOPOLO Yahliou Phinéas</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOKOPOLO Yahliou Phinéas — Développeur Web</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0e1a24;
+    --ink-soft:#16283a;
+    --paper:#f2ede2;
+    --paper-dim:#d9d2c1;
+    --track:#c1392b;
+    --gold:#d9a441;
+    --teal:#3f6b63;
+    --line: rgba(242,237,226,0.14);
+    --radius: 2px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--track); color:var(--paper);}
+  a{color:inherit;}
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:3px;
+  }
+
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  .display{font-family:'Oswald', sans-serif; text-transform:uppercase;}
+
+  .wrap{max-width:980px; margin:0 auto; padding:0 28px;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:20;
+    background:rgba(14,26,36,0.88);
+    backdrop-filter: blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-top:16px; padding-bottom:16px;
+  }
+  .brand{
+    font-family:'Oswald', sans-serif;
+    font-weight:600; letter-spacing:0.04em;
+    font-size:1rem; text-transform:uppercase;
+  }
+  .brand span{color:var(--track);}
+  .navlinks{display:flex; gap:26px; font-size:0.82rem; letter-spacing:0.05em;}
+  .navlinks a{
+    text-decoration:none; color:var(--paper-dim);
+    text-transform:uppercase; font-family:'IBM Plex Mono', monospace;
+    transition:color .2s ease;
+  }
+  .navlinks a:hover{color:var(--gold);}
+  .navlinks{display:none;}
+  @media(min-width:680px){ .navlinks{display:flex;} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    padding:96px 0 72px;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+  }
+  .lane-field{
+    position:absolute; inset:0; z-index:0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 46px,
+      var(--line) 46px, var(--line) 47px
+    );
+    opacity:0.5;
+    mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+  }
+  .hero .wrap{position:relative; z-index:1;}
+  .bib{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem; letter-spacing:0.14em;
+    color:var(--gold);
+    border:1px solid var(--gold);
+    padding:5px 12px;
+    border-radius:100px;
+    margin-bottom:28px;
+  }
+  .bib::before{content:"●"; font-size:0.55rem; color:var(--track);}
+  h1.name{
+    font-size:clamp(2.6rem, 7vw, 5.2rem);
+    line-height:0.98;
+    margin:0 0 18px;
+    font-weight:700;
+    letter-spacing:0.01em;
+  }
+  h1.name em{
+    font-style:normal;
+    color:var(--track);
+  }
+  .role{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:1.05rem;
+    color:var(--paper-dim);
+    margin:0 0 40px;
+    max-width:44ch;
+  }
+  .hero-meta{
+    display:flex; flex-wrap:wrap; gap:34px;
+    padding-top:32px;
+    border-top:1px solid var(--line);
+  }
+  .split{
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .split .t{
+    display:block; font-size:1.7rem; color:var(--paper); font-weight:600;
+  }
+  .split .l{
+    display:block; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--paper-dim); margin-top:4px;
+  }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:80px 0;}
+  section + section{border-top:1px solid var(--line);}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.75rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--track);
+    margin:0 0 14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .eyebrow::after{
+    content:"";
+    flex:1; height:1px; background:var(--line);
+  }
+  h2.title{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    font-weight:600;
+    font-size:clamp(1.6rem, 3.4vw, 2.3rem);
+    margin:0 0 28px;
+    letter-spacing:0.01em;
+  }
+  p.lead{
+    font-size:1.02rem; line-height:1.75; color:var(--paper-dim);
+    max-width:66ch; margin:0 0 18px;
+  }
+  p.lead strong{color:var(--paper); font-weight:600;}
+
+  /* ---------- SKILLS / LAP BOARD ---------- */
+  .board{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .cell{
+    background:var(--ink); padding:22px 22px 20px;
+  }
+  .cell .code{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem; letter-spacing:0.12em;
+    color:var(--gold);
+    margin-bottom:10px;
+    display:block;
+  }
+  .cell h3{
+    font-family:'Oswald', sans-serif; text-transform:uppercase;
+    font-size:0.95rem; letter-spacing:0.03em;
+    margin:0 0 12px; color:var(--paper);
+  }
+  .taglist{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:8px;}
+  .taglist li{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.76rem;
+    color:var(--paper-dim);
+    border:1px solid var(--line);
+    padding:4px 9px;
+    border-radius:100px;
+  }
+
+  /* ---------- PROJECTS / SPLIT TIMELINE ---------- */
+  .track{
+    position:relative;
+    margin-top:10px;
+    padding-left:34px;
+  }
+  .track::before{
+    content:"";
+    position:absolute; left:5px; top:6px; bottom:6px;
+    width:2px;
+    background: repeating-linear-gradient(to bottom, var(--track) 0 8px, transparent 8px 16px);
+  }
+  .lap{
+    position:relative;
+    padding-bottom:44px;
+  }
+  .lap:last-child{padding-bottom:0;}
+  .lap::before{
+    content:"";
+    position:absolute; left:-34px; top:4px;
+    width:11px; height:11px; border-radius:50%;
+    background:var(--ink);
+    border:2px solid var(--gold);
+  }
+  .lap.live::before{ border-color:var(--track); }
+  .lap-head{
+    display:flex; align-items:baseline; flex-wrap:wrap; gap:12px; margin-bottom:8px;
+  }
+  .lap-head h3{
+    font-family:'Oswald', sans-serif; text-transform:uppercase;
+    font-size:1.15rem; margin:0; letter-spacing:0.01em;
+  }
+  .status{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase;
+    padding:2px 9px; border-radius:100px;
+    border:1px solid var(--teal); color:var(--teal);
+  }
+  .status.live{ border-color:var(--track); color:var(--track); }
+  .lap p{
+    color:var(--paper-dim); line-height:1.7; margin:0; max-width:64ch; font-size:0.96rem;
+  }
+  .stack{
+    margin-top:10px; font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--gold); letter-spacing:0.03em;
+  }
+
+  /* ---------- PHILOSOPHY ---------- */
+  .philo{
+    border-left:3px solid var(--track);
+    padding-left:26px;
+  }
+  .philo p{
+    font-family:'Oswald', sans-serif; text-transform:none;
+    font-size:clamp(1.2rem, 2.4vw, 1.6rem);
+    font-weight:400; line-height:1.5;
+    margin:0 0 20px; color:var(--paper);
+  }
+  .philo p:last-child{margin-bottom:0;}
+
+  /* ---------- OBJECTIFS ---------- */
+  .goals{list-style:none; margin:0; padding:0;}
+  .goals li{
+    display:flex; gap:16px;
+    padding:18px 0;
+    border-bottom:1px solid var(--line);
+    align-items:baseline;
+  }
+  .goals li:first-child{border-top:1px solid var(--line);}
+  .goals .num{
+    font-family:'IBM Plex Mono', monospace; color:var(--track); font-size:0.85rem; flex:none; width:26px;
+  }
+  .goals p{margin:0; color:var(--paper-dim); line-height:1.6; font-size:0.98rem;}
+  .goals strong{color:var(--paper);}
+
+  /* ---------- LANGUES / INTERETS ---------- */
+  .duo{display:grid; gap:40px; grid-template-columns:1fr;}
+  @media(min-width:680px){ .duo{grid-template-columns:1fr 1fr;} }
+  .duo h3{
+    font-family:'IBM Plex Mono', monospace; text-transform:uppercase; letter-spacing:0.1em;
+    font-size:0.78rem; color:var(--gold); margin:0 0 16px;
+  }
+  .bar-row{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
+  .bar-row .lbl{width:120px; flex:none; font-size:0.9rem; color:var(--paper-dim);}
+  .bar-track{flex:1; height:6px; background:var(--line); position:relative; border-radius:100px;}
+  .bar-fill{height:100%; background:var(--track); border-radius:100px;}
+  .chips{display:flex; flex-wrap:wrap; gap:10px;}
+  .chips span{
+    font-family:'IBM Plex Mono', monospace; font-size:0.8rem;
+    border:1px solid var(--line); padding:6px 12px; border-radius:100px; color:var(--paper-dim);
+  }
+
+  /* ---------- CONTACT / FINISH ---------- */
+  .finish{
+    padding:90px 0 70px;
+    text-align:center;
+    position:relative;
+  }
+  .checker{
+    height:10px; width:100%;
+    background-image: repeating-linear-gradient(90deg, var(--paper) 0 14px, var(--ink) 14px 28px);
+    opacity:0.9;
+    margin-bottom:56px;
+  }
+  .finish h2{
+    font-family:'Oswald', sans-serif; text-transform:uppercase;
+    font-size:clamp(2rem,5vw,3rem); margin:0 0 14px;
+  }
+  .finish p.sub{color:var(--paper-dim); margin:0 0 40px; font-family:'IBM Plex Mono', monospace; font-size:0.9rem;}
+  .contact-row{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:14px;
+  }
+  .cbtn{
+    font-family:'IBM Plex Mono', monospace; font-size:0.86rem;
+    text-decoration:none;
+    border:1px solid var(--paper-dim);
+    padding:13px 24px;
+    border-radius:100px;
+    transition: all .2s ease;
+    color:var(--paper);
+  }
+  .cbtn.primary{
+    background:var(--track); border-color:var(--track); color:var(--paper);
+  }
+  .cbtn:hover{border-color:var(--gold); color:var(--gold);}
+  .cbtn.primary:hover{background:var(--gold); border-color:var(--gold); color:var(--ink);}
+  .loc{
+    margin-top:36px; font-size:0.82rem; color:var(--paper-dim); font-family:'IBM Plex Mono', monospace;
+  }
+
+  footer{
+    text-align:center; padding:26px 0 40px;
+    color:var(--paper-dim); font-size:0.75rem;
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+  }
+</style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body>
 
-  <!-- Section principale -->
-  <section class="max-w-5xl mx-auto p-8">
-    <header class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-blue-700 mb-2">BOKOPOLO Yahliou Phinéas</h1>
-      <p class="text-lg text-gray-600">Développeur Web & Programmeur Informaticien</p>
-      <div class="w-20 h-1 bg-blue-700 mx-auto mt-4 rounded-full"></div>
-    </header>
+<nav>
+  <div class="wrap">
+    <div class="brand">BOKOPOLO <span>Yahliou</span></div>
+    <div class="navlinks">
+      <a href="#apropos">Profil</a>
+      <a href="#competences">Compétences</a>
+      <a href="#projets">Projets</a>
+      <a href="#objectifs">Objectifs</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
 
-    <!-- À propos -->
-    <section class="mb-12">
-      <h2 class="text-2xl font-semibold text-blue-600 mb-3">Tout ce que vous devez savoir me concernant .</h2>
-      <p class="leading-relaxed">
-        Je m’appelle <strong>BOKOPOLO Yahliou Phinéas</strong>, passionné d’informatique et 
-        <strong>développeur web full stack</strong> en formation à l’
-        <strong>IFNTI (Institut de Formation aux Normes et Technologies de l’Informatique)</strong>, à Sokodé, au Togo.
-        Curieux, rigoureux et animé par le goût du défi, je conçois des solutions numériques qui allient 
-        <strong>performance, sécurité et simplicité d’utilisation</strong>.
-      </p>
-      <p class="mt-3 leading-relaxed">
-        Mon parcours m’a permis d’acquérir une solide maîtrise des <strong>langages et technologies modernes</strong>,
-        notamment <strong>Python, Java, C, PHP, JavaScript, HTML, CSS, Laravel et PostgreSQL</strong>,
-        ainsi qu’une bonne expérience de travail sous <strong>Linux (Ubuntu)</strong> et dans des environnements
-        collaboratifs <strong>Git/GitHub</strong>.
-      </p>
-    </section>
+<header class="hero">
+  <div class="lane-field" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="bib">DOSSARD IFNTI · SOKODÉ, TOGO</span>
+    <h1 class="name">BOKOPOLO<br>Yahliou <em>Phinéas</em></h1>
+    <p class="role">Développeur web full stack &amp; programmeur informaticien — je transforme des idées en applications rapides, sûres et faciles à utiliser.</p>
+    <div class="hero-meta">
+      <div class="split"><span class="t">05+</span><span class="l">Projets construits</span></div>
+      <div class="split"><span class="t">5</span><span class="l">Langages maîtrisés</span></div>
+      <div class="split"><span class="t">IFNTI</span><span class="l">Formation en cours</span></div>
+      <div class="split"><span class="t">TG</span><span class="l">Basé à Atakpamé</span></div>
+    </div>
+  </div>
+</header>
 
-    <!-- Compétences -->
-    <section class="mb-12">
-      <h2 class="text-2xl font-semibold text-blue-600 mb-3">💻 Compétences techniques</h2>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Langages :</strong> Python, Java, C, PHP, JavaScript</li>
-        <li><strong>Frameworks & bibliothèques :</strong> Laravel, Bootstrap, TailwindCSS</li>
-        <li><strong>Bases de données :</strong> PostgreSQL, MySQL</li>
-        <li><strong>Outils & environnements :</strong> VS Code, Linux Ubuntu, Apache, Docker (initiation), Git/GitHub</li>
-        <li><strong>Conception & modélisation :</strong> UML, diagrammes de cas d’utilisation, classes et séquences</li>
-        <li><strong>Autres compétences :</strong> Hébergement web, sécurité applicative, algorithmique</li>
-      </ul>
-    </section>
+<section id="apropos">
+  <div class="wrap">
+    <p class="eyebrow">Profil</p>
+    <h2 class="title">Ce qu'il faut savoir sur moi</h2>
+    <p class="lead">
+      Je m'appelle <strong>BOKOPOLO Yahliou Phinéas</strong>, passionné d'informatique et développeur web full stack
+      en formation à l'<strong>IFNTI</strong> (Institut de Formation aux Normes et Technologies de l'Informatique),
+      à Sokodé, au Togo. Curieux, rigoureux et animé par le goût du défi, je conçois des solutions numériques qui
+      allient <strong>performance, sécurité et simplicité d'utilisation</strong>.
+    </p>
+    <p class="lead">
+      Mon parcours m'a permis d'acquérir une solide maîtrise des langages et technologies modernes — notamment
+      <strong>Python, Java, C, PHP, JavaScript, HTML, CSS, Laravel et PostgreSQL</strong> — ainsi qu'une bonne
+      expérience de travail sous <strong>Linux (Ubuntu)</strong> et dans des environnements collaboratifs
+      <strong>Git/GitHub</strong>.
+    </p>
+  </div>
+</section>
 
-    <!-- Projets -->
-    <section class="mb-12">
-      <h2 class="text-2xl font-semibold text-blue-600 mb-3">🧠 Projets réalisés</h2>
-      <ul class="list-disc list-inside space-y-3">
-        <li>
-          🎮 <strong>Jeu de mémoire (HTML/CSS/JavaScript)</strong> — mini-jeu interactif conçu pour la journée portes ouvertes de mon institut, avec animations, sons et détection de victoire.
-        </li>
-        <li>
-          💼 <strong>Application de gestion de stock (Python)</strong> — système complet de gestion des produits, ventes et inventaire.
-        </li>
-        <li>
-          🏦 <strong>Mini-banque (Java)</strong> — application orientée objet permettant la création de comptes et la gestion des transactions.
-        </li>
-        <li>
-          🔐 <strong>Plateforme de sauvegarde de secrets (Laravel)</strong> — projet en cours : stockage sécurisé de documents, textes et vocaux, avec authentification par mot de passe et QR code.
-        </li>
-      </ul>
-    </section>
+<section id="competences">
+  <div class="wrap">
+    <p class="eyebrow">Compétences</p>
+    <h2 class="title">Le tableau des temps</h2>
+    <div class="board">
+      <div class="cell">
+        <span class="code">01 — LANG</span>
+        <h3>Langages</h3>
+        <ul class="taglist">
+          <li>Python</li><li>Java</li><li>C</li><li>PHP</li><li>JavaScript</li>
+        </ul>
+      </div>
+      <div class="cell">
+        <span class="code">02 — FRMWK</span>
+        <h3>Frameworks &amp; bibliothèques</h3>
+        <ul class="taglist">
+          <li>Laravel</li><li>Bootstrap</li><li>TailwindCSS</li>
+        </ul>
+      </div>
+      <div class="cell">
+        <span class="code">03 — DATA</span>
+        <h3>Bases de données</h3>
+        <ul class="taglist">
+          <li>PostgreSQL</li><li>MySQL</li>
+        </ul>
+      </div>
+      <div class="cell">
+        <span class="code">04 — TOOL</span>
+        <h3>Outils &amp; environnements</h3>
+        <ul class="taglist">
+          <li>VS Code</li><li>Linux Ubuntu</li><li>Apache</li><li>Docker (initiation)</li><li>Git/GitHub</li>
+        </ul>
+      </div>
+      <div class="cell">
+        <span class="code">05 — MDL</span>
+        <h3>Conception &amp; modélisation</h3>
+        <ul class="taglist">
+          <li>UML</li><li>Cas d'utilisation</li><li>Diagrammes de classes</li><li>Diagrammes de séquence</li>
+        </ul>
+      </div>
+      <div class="cell">
+        <span class="code">06 — SEC</span>
+        <h3>Autres compétences</h3>
+        <ul class="taglist">
+          <li>Hébergement web</li><li>Sécurité applicative</li><li>Algorithmique</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Philosophie -->
-    <section class="mb-12">
-      <h2 class="text-2xl font-semibold text-blue-600 mb-3">🧩 Philosophie professionnelle</h2>
-      <p class="leading-relaxed">
-        Je crois que <strong>la programmation est un art</strong> : celui de transformer une idée abstraite en solution concrète, utile et belle.
-        Chaque ligne de code est pour moi un moyen d’apprendre, d’innover et de créer de la valeur pour les autres.
-      </p>
-      <p class="mt-3 leading-relaxed">
-        Mon objectif est de <strong>contribuer à des projets à impact réel</strong>, en combinant créativité, rigueur et esprit d’équipe.
-      </p>
-    </section>
+<section id="projets">
+  <div class="wrap">
+    <p class="eyebrow">Projets</p>
+    <h2 class="title">Les temps de passage</h2>
+    <div class="track">
 
-    <!-- Objectifs -->
-    <section class="mb-12">
-      <h2 class="text-2xl font-semibold text-blue-600 mb-3">🚀 Objectifs actuels</h2>
-      <ul class="list-disc list-inside space-y-2">
-        <li>Approfondir mes compétences en <strong>développement full stack</strong> et <strong>cybersécurité</strong> (notamment Fortinet)</li>
-        <li>Participer à des <strong>projets open source ou collaboratifs</strong></li>
-        <li>Intégrer un <strong>stage professionnel en développement web</strong> pour appliquer mes connaissances sur le terrain</li>
-      </ul>
-    </section>
+      <div class="lap live">
+        <div class="lap-head">
+          <h3>SignAI</h3>
+          <span class="status live">En cours</span>
+        </div>
+        <p>Plateforme IA qui traduit la langue des signes en texte vocalisé, pour rendre la communication plus accessible.</p>
+        <div class="stack">IA · Traitement du signal · Vocalisation</div>
+      </div>
 
-    <!-- Langues & intérêts -->
-    <section class="mb-12">
-      <h2 class="text-2xl font-semibold text-blue-600 mb-3">🌟 Langues & centres d’intérêt</h2>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Langues :</strong> Français (courant), Anglais (intermédiaire), Kabyè (langue maternelle)</li>
-        <li><strong>Centres d’intérêt :</strong> Athlétisme (sprint), technologie, innovation, résolution de problèmes</li>
-      </ul>
-    </section>
+      <div class="lap live">
+        <div class="lap-head">
+          <h3>Plateforme de sauvegarde de secrets</h3>
+          <span class="status live">En cours</span>
+        </div>
+        <p>Stockage sécurisé de documents, textes et messages vocaux, avec authentification par mot de passe et QR code.</p>
+        <div class="stack">Laravel · PostgreSQL · Sécurité applicative</div>
+      </div>
 
-    <!-- Contact -->
-    <section class="text-center mt-10">
-      <h2 class="text-2xl font-semibold text-blue-600 mb-3">✉️ Contact</h2>
-      <p>Email : <a href="mailto:phineasbokopolo@gmail.com" class="text-blue-600 hover:underline">phineasbokopolo@gmail.com</a></p>
-      <p>GitHub : <a href="https://github.com/FreshyayaBePro" class="text-blue-600 hover:underline">github.com/FreshyayaBePro</a></p>
-      <p>LinkedIn : <a href="https://https://www.linkedin.com/in/phinéas-bokopolo-b864662b2?utm_source=share_via&utm_content=profile&utm_medium=member_android" class="text-blue-600 hover:underline">visiter ma page LinkedIn</a></p>
-      <p>Localisation : Sokodé, Togo</p>
-    </section>
+      <div class="lap">
+        <div class="lap-head">
+          <h3>Mini-banque</h3>
+          <span class="status">Terminé</span>
+        </div>
+        <p>Application orientée objet permettant la création de comptes et la gestion des transactions.</p>
+        <div class="stack">Java · POO</div>
+      </div>
 
-    <footer class="text-center mt-12 text-gray-500 text-sm">
-      © 2025 BOKOPOLO Yahliou Phinéas — Tous droits réservés.
-    </footer>
-  </section>
+      <div class="lap">
+        <div class="lap-head">
+          <h3>Application de gestion de stock</h3>
+          <span class="status">Terminé</span>
+        </div>
+        <p>Système complet de gestion des produits, des ventes et de l'inventaire.</p>
+        <div class="stack">Python</div>
+      </div>
+
+      <div class="lap">
+        <div class="lap-head">
+          <h3>Jeu de mémoire</h3>
+          <span class="status">Terminé</span>
+        </div>
+        <p>Mini-jeu interactif conçu pour la journée portes ouvertes de mon institut, avec animations, sons et détection de victoire.</p>
+        <div class="stack">HTML · CSS · JavaScript</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="philosophie">
+  <div class="wrap">
+    <p class="eyebrow">Philosophie</p>
+    <h2 class="title">Ma ligne de départ</h2>
+    <div class="philo">
+      <p>« La programmation est un art : celui de transformer une idée abstraite en solution concrète, utile et belle. »</p>
+      <p>Chaque ligne de code est pour moi un moyen d'apprendre, d'innover et de créer de la valeur pour les autres. Mon objectif est de contribuer à des projets à impact réel, en combinant créativité, rigueur et esprit d'équipe.</p>
+    </div>
+  </div>
+</section>
+
+<section id="objectifs">
+  <div class="wrap">
+    <p class="eyebrow">Objectifs</p>
+    <h2 class="title">Ce que je vise maintenant</h2>
+    <ul class="goals">
+      <li>
+        <span class="num">01</span>
+        <p>Approfondir mes compétences en <strong>développement full stack</strong> et en <strong>cybersécurité</strong> (notamment Fortinet).</p>
+      </li>
+      <li>
+        <span class="num">02</span>
+        <p>Participer à des <strong>projets open source ou collaboratifs</strong>.</p>
+      </li>
+      <li>
+        <span class="num">03</span>
+        <p>Intégrer un <strong>stage professionnel en développement web</strong> pour appliquer mes connaissances sur le terrain.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section id="langues">
+  <div class="wrap">
+    <p class="eyebrow">Langues &amp; intérêts</p>
+    <h2 class="title">Hors piste</h2>
+    <div class="duo">
+      <div>
+        <h3>Langues parlées</h3>
+        <div class="bar-row">
+          <span class="lbl">Français</span>
+          <div class="bar-track"><div class="bar-fill" style="width:95%"></div></div>
+        </div>
+        <div class="bar-row">
+          <span class="lbl">Anglais</span>
+          <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+        </div>
+        <div class="bar-row">
+          <span class="lbl">Kabyè</span>
+          <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+      <div>
+        <h3>Centres d'intérêt</h3>
+        <div class="chips">
+          <span>Athlétisme — sprint</span>
+          <span>Technologie</span>
+          <span>Innovation</span>
+          <span>Résolution de problèmes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="finish">
+  <div class="wrap">
+    <div class="checker" aria-hidden="true"></div>
+    <p class="eyebrow" style="justify-content:center;">Contact</p>
+    <h2>Franchissons la ligne ensemble</h2>
+    <p class="sub">Disponible pour un stage, une collaboration ou un projet open source.</p>
+    <div class="contact-row">
+      <a class="cbtn primary" href="mailto:phineasbokopolo@gmail.com">phineasbokopolo@gmail.com</a>
+      <a class="cbtn" href="https://github.com/FreshyayaBePro" target="_blank" rel="noopener">GitHub</a>
+      <a class="cbtn" href="https://www.linkedin.com/in/yahliou-bokopolo-01b14a413" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <p class="loc">Atakpamé, Togo</p>
+  </div>
+</section>
+
+<footer>© 2026 BOKOPOLO Yahliou Phinéas — Tous droits réservés.</footer>
 
 </body>
 </html>
