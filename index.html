@@ -2,579 +2,1017 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BOKOPOLO Yahliou Phinéas — Développeur Web</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bokopolo Yahliou Phinéas — Développeur full stack & DevOps</title>
+<meta name="description" content="Portfolio de Bokopolo Yahliou Phinéas, développeur web full stack et responsable DevOps chez Tafarama, à Atakpamé (Togo).">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000'/%3E%3Ccircle cx='32' cy='32' r='13' fill='%23fff'/%3E%3Cellipse cx='32' cy='32' rx='27' ry='7' fill='none' stroke='%23fff' stroke-width='2' transform='rotate(-20 32 32)'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#0e1a24;
-    --ink-soft:#16283a;
-    --paper:#f2ede2;
-    --paper-dim:#d9d2c1;
-    --track:#c1392b;
-    --gold:#d9a441;
-    --teal:#3f6b63;
-    --line: rgba(242,237,226,0.14);
-    --radius: 2px;
+    --bg:#000;
+    --fg:#f3f2ee;
+    --dim:#a3a29d;
+    --mute:#62615e;
+    --line:rgba(255,255,255,.16);
+    --c:#fff;                       /* couleur de la planète active : seule touche de couleur */
+    --serif:'Instrument Serif','Times New Roman',serif;
+    --sans:'Archivo','Helvetica Neue',Arial,sans-serif;
+    --panel-w:min(500px,42vw);
+    --pad:clamp(18px,3.2vw,44px);
   }
   *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
+  html,body{height:100%;}
   body{
-    margin:0;
-    background:var(--ink);
-    color:var(--paper);
-    font-family:'Inter', sans-serif;
-    -webkit-font-smoothing:antialiased;
+    margin:0; background:var(--bg); color:var(--fg);
+    font-family:var(--sans); font-size:16px; -webkit-font-smoothing:antialiased;
+    overflow:hidden; overscroll-behavior:none;
   }
-  ::selection{background:var(--track); color:var(--paper);}
+  ::selection{background:var(--fg); color:#000;}
   a{color:inherit;}
-  a:focus-visible, button:focus-visible{
-    outline:2px solid var(--gold);
-    outline-offset:3px;
+  button{font:inherit; color:inherit; background:none; border:0; cursor:pointer; padding:0;}
+  a:focus-visible,button:focus-visible{outline:1px solid var(--fg); outline-offset:5px;}
+  .caps{font-size:.68rem; font-weight:500; letter-spacing:.2em; text-transform:uppercase;}
+
+  /* ---------- scène ---------- */
+  #scene{position:fixed; inset:0; width:100%; height:100%; display:block; touch-action:none; cursor:grab;}
+  #scene.dragging{cursor:grabbing;}
+  #scene.hover{cursor:pointer;}
+  .shade{
+    position:fixed; inset:0; pointer-events:none; z-index:1;
+    background:radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,.8) 100%);
+  }
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:40; opacity:.09; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  .mono{font-family:'IBM Plex Mono', monospace;}
-  .display{font-family:'Oswald', sans-serif; text-transform:uppercase;}
+  /* ---------- chargement ---------- */
+  #loader{position:fixed; inset:0; z-index:50; background:#000; display:grid; place-items:center; transition:opacity 1.2s ease, visibility 1.2s;}
+  #loader.done{opacity:0; visibility:hidden;}
+  #loader i{display:block; width:120px; height:1px; background:var(--fg); transform-origin:left; animation:load 1.4s cubic-bezier(.7,0,.2,1) infinite;}
+  @keyframes load{0%{transform:scaleX(0);} 60%{transform:scaleX(1); opacity:1;} 100%{transform:scaleX(1); opacity:0;}}
 
-  .wrap{max-width:980px; margin:0 auto; padding:0 28px;}
+  /* ---------- en-tête ---------- */
+  .top{
+    position:fixed; top:0; left:0; right:0; z-index:20;
+    display:flex; align-items:baseline; gap:28px;
+    padding:max(22px, env(safe-area-inset-top)) var(--pad) 0;
+  }
+  .brand{font-family:var(--serif); font-size:1.5rem; line-height:1; letter-spacing:.01em;}
+  .nav{display:flex; gap:26px; margin-left:auto; overflow-x:auto; scrollbar-width:none;}
+  .nav::-webkit-scrollbar{display:none;}
+  .nav button, .mode{color:var(--mute); padding:4px 0; white-space:nowrap; transition:color .25s; position:relative;}
+  .nav button:hover, .mode:hover{color:var(--fg);}
+  .nav button.on{color:var(--fg);}
+  .nav button::after{content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:var(--fg); transform:scaleX(0); transform-origin:left; transition:transform .35s cubic-bezier(.2,.8,.2,1);}
+  .nav button.on::after{transform:scaleX(1);}
+  .mode{border-left:1px solid var(--line); padding-left:26px;}
 
-  /* ---------- NAV ---------- */
-  nav{
-    position:sticky; top:0; z-index:20;
-    background:rgba(14,26,36,0.88);
-    backdrop-filter: blur(6px);
-    border-bottom:1px solid var(--line);
-  }
-  nav .wrap{
-    display:flex; align-items:center; justify-content:space-between;
-    padding-top:16px; padding-bottom:16px;
-  }
-  .brand{
-    font-family:'Oswald', sans-serif;
-    font-weight:600; letter-spacing:0.04em;
-    font-size:1rem; text-transform:uppercase;
-  }
-  .brand span{color:var(--track);}
-  .navlinks{display:flex; gap:26px; font-size:0.82rem; letter-spacing:0.05em;}
-  .navlinks a{
-    text-decoration:none; color:var(--paper-dim);
-    text-transform:uppercase; font-family:'IBM Plex Mono', monospace;
-    transition:color .2s ease;
-  }
-  .navlinks a:hover{color:var(--gold);}
-  .navlinks{display:none;}
-  @media(min-width:680px){ .navlinks{display:flex;} }
-
-  /* ---------- HERO ---------- */
+  /* ---------- accueil ---------- */
   .hero{
-    position:relative;
-    padding:96px 0 72px;
-    overflow:hidden;
-    border-bottom:1px solid var(--line);
+    position:fixed; z-index:10; left:var(--pad); right:var(--pad); bottom:clamp(30px,7vh,70px);
+    pointer-events:none; transition:opacity .7s ease, visibility .7s;
   }
-  .lane-field{
-    position:absolute; inset:0; z-index:0;
-    background-image: repeating-linear-gradient(
-      to bottom,
-      transparent 0px, transparent 46px,
-      var(--line) 46px, var(--line) 47px
-    );
-    opacity:0.5;
-    mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+  .hero > *{pointer-events:auto;}
+  body:not(.home) .hero{opacity:0; visibility:hidden;}
+  .hero .caps{color:var(--dim); margin:0 0 20px;}
+  h1{
+    font-family:var(--serif); font-weight:400; margin:0;
+    font-size:clamp(3.2rem,10.5vw,10.5rem); line-height:.86; letter-spacing:-.02em;
+    mix-blend-mode:difference; pointer-events:none;
   }
-  .hero .wrap{position:relative; z-index:1;}
-  .bib{
-    display:inline-flex; align-items:center; gap:10px;
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.78rem; letter-spacing:0.14em;
-    color:var(--gold);
-    border:1px solid var(--gold);
-    padding:5px 12px;
-    border-radius:100px;
-    margin-bottom:28px;
+  h1 > span{display:block; overflow:hidden; padding-bottom:.08em;}
+  body.revealed h1 > span{overflow:visible;}
+  h1 > span > b{display:block; font-weight:400; transform:translateY(105%); transition:transform 1.3s cubic-bezier(.2,.8,.2,1);}
+  h1 > span:nth-child(2) > b{transition-delay:.12s;}
+  body.ready h1 > span > b{transform:none;}
+  .w{display:inline-block; white-space:nowrap;}
+  .ch{display:inline-block; will-change:transform;}
+  h1 em{font-style:italic;}
+  .hero-foot{display:flex; align-items:flex-end; justify-content:space-between; gap:30px; margin-top:26px; padding-top:20px; border-top:1px solid var(--line);}
+  .hero-foot p{margin:0; color:var(--dim); max-width:40ch; line-height:1.55; font-size:.98rem;}
+  .enter{font-family:var(--serif); font-size:1.7rem; line-height:1; white-space:nowrap; display:inline-flex; gap:14px; align-items:baseline;}
+  .enter span{display:inline-block; transition:transform .3s;}
+  .enter:hover span{transform:translateX(8px);}
+
+  /* ---------- étiquettes des planètes ---------- */
+  .labels{position:fixed; inset:0; z-index:5; pointer-events:none; overflow:hidden;}
+  .label{
+    position:absolute; left:0; top:0; pointer-events:auto; will-change:transform;
+    color:var(--dim); white-space:nowrap; padding:6px 4px; transition:opacity .4s, color .25s;
   }
-  .bib::before{content:"●"; font-size:0.55rem; color:var(--track);}
-  h1.name{
-    font-size:clamp(2.6rem, 7vw, 5.2rem);
-    line-height:0.98;
-    margin:0 0 18px;
-    font-weight:700;
-    letter-spacing:0.01em;
+  .label:hover,.label.hot{color:var(--fg);}
+  .label.hide{opacity:0; pointer-events:none;}
+
+  /* ---------- panneaux ---------- */
+  .panel{
+    position:fixed; z-index:15; top:0; right:0; bottom:0; width:var(--panel-w);
+    display:flex; flex-direction:column;
+    padding:clamp(84px,13vh,120px) var(--pad) 0 90px;
+    background:linear-gradient(90deg, transparent, rgba(0,0,0,.9) 84px, #000 60%);
+    opacity:0; visibility:hidden; transform:translateX(24px);
+    transition:opacity .6s ease, transform .7s cubic-bezier(.2,.8,.2,1), visibility .6s;
   }
-  h1.name em{
-    font-style:normal;
-    color:var(--track);
+  .panel.open{opacity:1; visibility:visible; transform:none;}
+  .p-head{flex:none; padding-bottom:26px;}
+  .p-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; color:var(--dim);}
+  .p-row .caps::before{content:""; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--c); margin-right:12px; vertical-align:baseline;}
+  .close{width:28px; height:28px; position:relative; opacity:.6; transition:opacity .2s, transform .3s;}
+  .close::before,.close::after{content:""; position:absolute; left:2px; right:2px; top:50%; height:1px; background:var(--fg);}
+  .close::before{transform:rotate(45deg);} .close::after{transform:rotate(-45deg);}
+  .close:hover{opacity:1; transform:rotate(90deg);}
+  h2{font-family:var(--serif); font-weight:400; font-size:clamp(2.2rem,3.6vw,3.3rem); line-height:1; letter-spacing:-.01em; margin:0; text-wrap:balance;}
+  .p-body{flex:1; overflow-y:auto; padding-bottom:90px; scrollbar-width:none;}
+  .p-body::-webkit-scrollbar{display:none;}
+  .p-body p{color:var(--dim); line-height:1.7; margin:0 0 16px; font-size:.98rem;}
+  .p-body strong{color:var(--fg); font-weight:500;}
+
+  .rows{margin:0;}
+  .rows > div{padding:16px 0; border-top:1px solid var(--line);}
+  .rows dt{color:var(--mute); margin-bottom:8px;}
+  .rows dd{margin:0; line-height:1.6; font-size:1rem;}
+
+  .proj{padding:20px 0; border-top:1px solid var(--line);}
+  .proj header{display:flex; align-items:baseline; justify-content:space-between; gap:14px; margin-bottom:8px;}
+  .proj h3{font-family:var(--serif); font-weight:400; font-size:1.65rem; line-height:1.1; margin:0;}
+  .proj .caps{color:var(--mute); flex:none;}
+  .proj .live{color:var(--fg);}
+  .proj p{margin:0 0 8px;}
+  .proj small{color:var(--mute); font-size:.82rem;}
+
+  blockquote{margin:0 0 28px; font-family:var(--serif); font-style:italic; font-size:clamp(1.5rem,2.3vw,2rem); line-height:1.25; color:var(--fg);}
+
+  .goals{list-style:none; margin:0; padding:0; counter-reset:g;}
+  .goals li{display:grid; grid-template-columns:48px 1fr; padding:18px 0; border-top:1px solid var(--line); counter-increment:g;}
+  .goals li::before{content:counter(g); font-family:var(--serif); font-size:1.9rem; line-height:1; color:var(--fg);}
+  .goals p{margin:0;}
+
+  .bar{display:grid; grid-template-columns:90px 1fr; align-items:center; gap:16px; padding:11px 0; color:var(--fg);}
+  .bar i{height:1px; background:var(--line); display:block; position:relative;}
+  .bar i::after{content:""; position:absolute; left:0; top:-1px; height:3px; width:0; background:var(--fg); transition:width 1.3s cubic-bezier(.2,.8,.2,1) .3s;}
+  .panel.open .bar i::after, body.flat .bar i::after{width:var(--w);}
+  .sub{color:var(--mute); margin:26px 0 10px; padding-top:18px; border-top:1px solid var(--line);}
+
+  .links{margin:8px 0 26px;}
+  .links a{
+    display:flex; align-items:baseline; justify-content:space-between; gap:14px; text-decoration:none;
+    padding:18px 0; border-top:1px solid var(--line);
+    font-family:var(--serif); font-size:clamp(1.3rem,2vw,1.7rem); line-height:1.1; overflow-wrap:anywhere;
   }
-  .role{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:1.05rem;
-    color:var(--paper-dim);
-    margin:0 0 40px;
-    max-width:44ch;
+  .links a:last-child{border-bottom:1px solid var(--line);}
+  .links a::after{content:"↗"; font-family:var(--sans); font-size:1rem; color:var(--mute); transition:transform .3s, color .3s;}
+  .links a:hover::after{transform:translate(4px,-4px); color:var(--fg);}
+
+  /* ---------- pas à pas ---------- */
+  .dock{
+    position:fixed; z-index:20; left:var(--pad); bottom:max(26px, env(safe-area-inset-bottom));
+    display:flex; align-items:center; gap:18px; color:var(--dim); transition:opacity .5s, visibility .5s;
   }
-  .hero-meta{
-    display:flex; flex-wrap:wrap; gap:34px;
-    padding-top:32px;
-    border-top:1px solid var(--line);
-  }
-  .split{
-    font-family:'IBM Plex Mono', monospace;
-  }
-  .split .t{
-    display:block; font-size:1.7rem; color:var(--paper); font-weight:600;
-  }
-  .split .l{
-    display:block; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--paper-dim); margin-top:4px;
+  body:not(.viewing) .dock{opacity:0; visibility:hidden;}
+  .dock button{font-size:1.1rem; padding:6px 4px; color:var(--dim); transition:color .2s;}
+  .dock button:hover{color:var(--fg);}
+  .dock span{min-width:54px; text-align:center; font-variant-numeric:tabular-nums;}
+
+  footer{display:none;}
+
+  /* ---------- mobile ---------- */
+  @media (max-width:820px){
+    .top{flex-wrap:wrap; gap:14px 20px;}
+    .mode{margin-left:auto; border:0; padding-left:0;}
+    .nav{order:3; width:100%; margin:0; gap:22px;}
+    .hero-foot{flex-direction:column; align-items:flex-start; gap:18px;}
+    h1{font-size:clamp(3rem,17vw,6rem);}
+    .panel{
+      top:auto; left:0; width:auto; height:62vh; padding:70px var(--pad) 0;
+      background:linear-gradient(180deg, transparent, rgba(0,0,0,.92) 56px, #000 40%);
+      transform:translateY(24px);
+    }
+    .p-head{padding-bottom:18px;}
+    .p-body{padding-bottom:80px;}
+    .dock{left:50%; transform:translateX(-50%);}
   }
 
-  /* ---------- SECTION SHELL ---------- */
-  section{padding:80px 0;}
-  section + section{border-top:1px solid var(--line);}
-  .eyebrow{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.75rem;
-    letter-spacing:0.18em;
-    text-transform:uppercase;
-    color:var(--track);
-    margin:0 0 14px;
-    display:flex; align-items:center; gap:12px;
+  /* ---------- version texte (sans 3D) ---------- */
+  body.flat{overflow:auto; overscroll-behavior:auto;}
+  body.flat #scene, body.flat .shade, body.flat .labels, body.flat .dock, body.flat .close, body.flat .nav, body.flat .enter{display:none;}
+  body.flat .top{position:sticky; background:#000; padding-bottom:18px; border-bottom:1px solid var(--line);}
+  body.flat .mode{margin-left:auto; border:0;}
+  body.flat .hero, body.flat .panel{
+    position:static; opacity:1; visibility:visible; transform:none; height:auto; background:none;
+    width:min(820px, calc(100% - 2*var(--pad))); margin:0 auto; padding:70px 0 0;
   }
-  .eyebrow::after{
-    content:"";
-    flex:1; height:1px; background:var(--line);
-  }
-  h2.title{
-    font-family:'Oswald', sans-serif;
-    text-transform:uppercase;
-    font-weight:600;
-    font-size:clamp(1.6rem, 3.4vw, 2.3rem);
-    margin:0 0 28px;
-    letter-spacing:0.01em;
-  }
-  p.lead{
-    font-size:1.02rem; line-height:1.75; color:var(--paper-dim);
-    max-width:66ch; margin:0 0 18px;
-  }
-  p.lead strong{color:var(--paper); font-weight:600;}
+  body.flat .hero{padding-top:90px;}
+  body.flat h1{font-size:clamp(3rem,9vw,7rem); mix-blend-mode:normal;}
+  body.flat .p-body{overflow:visible; padding-bottom:0;}
+  body.flat footer{display:block; width:min(820px, calc(100% - 2*var(--pad))); margin:80px auto 0; padding:22px 0 50px; border-top:1px solid var(--line); color:var(--mute);}
 
-  /* ---------- SKILLS / LAP BOARD ---------- */
-  .board{
-    display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-    gap:1px;
-    background:var(--line);
-    border:1px solid var(--line);
-  }
-  .cell{
-    background:var(--ink); padding:22px 22px 20px;
-  }
-  .cell .code{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.7rem; letter-spacing:0.12em;
-    color:var(--gold);
-    margin-bottom:10px;
-    display:block;
-  }
-  .cell h3{
-    font-family:'Oswald', sans-serif; text-transform:uppercase;
-    font-size:0.95rem; letter-spacing:0.03em;
-    margin:0 0 12px; color:var(--paper);
-  }
-  .taglist{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:8px;}
-  .taglist li{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.76rem;
-    color:var(--paper-dim);
-    border:1px solid var(--line);
-    padding:4px 9px;
-    border-radius:100px;
-  }
-
-  /* ---------- PROJECTS / SPLIT TIMELINE ---------- */
-  .track{
-    position:relative;
-    margin-top:10px;
-    padding-left:34px;
-  }
-  .track::before{
-    content:"";
-    position:absolute; left:5px; top:6px; bottom:6px;
-    width:2px;
-    background: repeating-linear-gradient(to bottom, var(--track) 0 8px, transparent 8px 16px);
-  }
-  .lap{
-    position:relative;
-    padding-bottom:44px;
-  }
-  .lap:last-child{padding-bottom:0;}
-  .lap::before{
-    content:"";
-    position:absolute; left:-34px; top:4px;
-    width:11px; height:11px; border-radius:50%;
-    background:var(--ink);
-    border:2px solid var(--gold);
-  }
-  .lap.live::before{ border-color:var(--track); }
-  .lap-head{
-    display:flex; align-items:baseline; flex-wrap:wrap; gap:12px; margin-bottom:8px;
-  }
-  .lap-head h3{
-    font-family:'Oswald', sans-serif; text-transform:uppercase;
-    font-size:1.15rem; margin:0; letter-spacing:0.01em;
-  }
-  .status{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase;
-    padding:2px 9px; border-radius:100px;
-    border:1px solid var(--teal); color:var(--teal);
-  }
-  .status.live{ border-color:var(--track); color:var(--track); }
-  .lap p{
-    color:var(--paper-dim); line-height:1.7; margin:0; max-width:64ch; font-size:0.96rem;
-  }
-  .stack{
-    margin-top:10px; font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--gold); letter-spacing:0.03em;
-  }
-
-  /* ---------- PHILOSOPHY ---------- */
-  .philo{
-    border-left:3px solid var(--track);
-    padding-left:26px;
-  }
-  .philo p{
-    font-family:'Oswald', sans-serif; text-transform:none;
-    font-size:clamp(1.2rem, 2.4vw, 1.6rem);
-    font-weight:400; line-height:1.5;
-    margin:0 0 20px; color:var(--paper);
-  }
-  .philo p:last-child{margin-bottom:0;}
-
-  /* ---------- OBJECTIFS ---------- */
-  .goals{list-style:none; margin:0; padding:0;}
-  .goals li{
-    display:flex; gap:16px;
-    padding:18px 0;
-    border-bottom:1px solid var(--line);
-    align-items:baseline;
-  }
-  .goals li:first-child{border-top:1px solid var(--line);}
-  .goals .num{
-    font-family:'IBM Plex Mono', monospace; color:var(--track); font-size:0.85rem; flex:none; width:26px;
-  }
-  .goals p{margin:0; color:var(--paper-dim); line-height:1.6; font-size:0.98rem;}
-  .goals strong{color:var(--paper);}
-
-  /* ---------- LANGUES / INTERETS ---------- */
-  .duo{display:grid; gap:40px; grid-template-columns:1fr;}
-  @media(min-width:680px){ .duo{grid-template-columns:1fr 1fr;} }
-  .duo h3{
-    font-family:'IBM Plex Mono', monospace; text-transform:uppercase; letter-spacing:0.1em;
-    font-size:0.78rem; color:var(--gold); margin:0 0 16px;
-  }
-  .bar-row{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
-  .bar-row .lbl{width:120px; flex:none; font-size:0.9rem; color:var(--paper-dim);}
-  .bar-track{flex:1; height:6px; background:var(--line); position:relative; border-radius:100px;}
-  .bar-fill{height:100%; background:var(--track); border-radius:100px;}
-  .chips{display:flex; flex-wrap:wrap; gap:10px;}
-  .chips span{
-    font-family:'IBM Plex Mono', monospace; font-size:0.8rem;
-    border:1px solid var(--line); padding:6px 12px; border-radius:100px; color:var(--paper-dim);
-  }
-
-  /* ---------- CONTACT / FINISH ---------- */
-  .finish{
-    padding:90px 0 70px;
-    text-align:center;
-    position:relative;
-  }
-  .checker{
-    height:10px; width:100%;
-    background-image: repeating-linear-gradient(90deg, var(--paper) 0 14px, var(--ink) 14px 28px);
-    opacity:0.9;
-    margin-bottom:56px;
-  }
-  .finish h2{
-    font-family:'Oswald', sans-serif; text-transform:uppercase;
-    font-size:clamp(2rem,5vw,3rem); margin:0 0 14px;
-  }
-  .finish p.sub{color:var(--paper-dim); margin:0 0 40px; font-family:'IBM Plex Mono', monospace; font-size:0.9rem;}
-  .contact-row{
-    display:flex; flex-wrap:wrap; justify-content:center; gap:14px;
-  }
-  .cbtn{
-    font-family:'IBM Plex Mono', monospace; font-size:0.86rem;
-    text-decoration:none;
-    border:1px solid var(--paper-dim);
-    padding:13px 24px;
-    border-radius:100px;
-    transition: all .2s ease;
-    color:var(--paper);
-  }
-  .cbtn.primary{
-    background:var(--track); border-color:var(--track); color:var(--paper);
-  }
-  .cbtn:hover{border-color:var(--gold); color:var(--gold);}
-  .cbtn.primary:hover{background:var(--gold); border-color:var(--gold); color:var(--ink);}
-  .loc{
-    margin-top:36px; font-size:0.82rem; color:var(--paper-dim); font-family:'IBM Plex Mono', monospace;
-  }
-
-  footer{
-    text-align:center; padding:26px 0 40px;
-    color:var(--paper-dim); font-size:0.75rem;
-    font-family:'IBM Plex Mono', monospace;
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    html{scroll-behavior:auto;}
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none !important; transition-duration:.01ms !important;}
   }
 </style>
 </head>
-<body>
+<body class="home">
 
-<nav>
-  <div class="wrap">
-    <div class="brand">BOKOPOLO <span>Yahliou</span></div>
-    <div class="navlinks">
-      <a href="#apropos">Profil</a>
-      <a href="#competences">Compétences</a>
-      <a href="#projets">Projets</a>
-      <a href="#objectifs">Objectifs</a>
-      <a href="#contact">Contact</a>
-    </div>
-  </div>
-</nav>
+<div id="loader"><i></i></div>
 
-<header class="hero">
-  <div class="lane-field" aria-hidden="true"></div>
-  <div class="wrap">
-    <span class="bib">DevOps chez Tafarama . Atakpamé, TOGO</span>
-    <h1 class="name">BOKOPOLO<br>Yahliou <em>Phinéas</em></h1>
-    <p class="role">Développeur web full stack &amp; programmeur informaticien — je transforme des idées en applications rapides, sûres et faciles à utiliser.</p>
-    <div class="hero-meta">
-      <div class="split"><span class="t">05+</span><span class="l">Projets construits</span></div>
-      <div class="split"><span class="t">12+</span><span class="l">Langages maîtrisés</span></div>
-      <div class="split"><span class="t">IFNTI</span><span class="l">Formation en cours</span></div>
-      <div class="split"><span class="t">TG</span><span class="l">Basé à Atakpamé</span></div>
-    </div>
-  </div>
+<canvas id="scene" aria-label="Système solaire interactif : chaque planète est une rubrique"></canvas>
+<div class="shade" aria-hidden="true"></div>
+<div class="labels caps" id="labels"></div>
+
+<header class="top">
+  <button class="brand" id="brand" >Freshyaya</button>
+  <nav class="nav caps" id="nav" aria-label="Rubriques"></nav>
+  <button class="mode caps" id="mode">Texte</button>
 </header>
 
-<section id="apropos">
-  <div class="wrap">
-    <p class="eyebrow">Profil</p>
-    <h2 class="title">Ce qu'il faut savoir sur moi</h2>
-    <p class="lead">
-      Je m'appelle <strong>BOKOPOLO Yahliou Phinéas</strong>, passionné d'informatique et développeur web full stack
-      en fin de formation à l'<strong>IFNTI</strong> (Institut de Formation aux Normes et Technologies de l'Informatique),
-      à Sokodé, au Togo. Je suis actuellement Responsable DevOps à Tafarama situé à atakpamé, au Togo. Curieux, rigoureux et animé par le goût du défi, je conçois des solutions numériques qui
-      allient <strong>performance, sécurité et simplicité d'utilisation</strong>.
-    </p>
-    <p class="lead">
-      Mon parcours m'a permis d'acquérir une solide maîtrise des langages et technologies modernes — notamment
-      <strong>Python, Java, C, PHP, JavaScript, HTML, CSS, React, Laravel, Django, PostgreSQL, MongoDB et bien plus encore</strong> — ainsi qu'une bonne
-      expérience de travail sous <strong>Linux (Ubuntu)</strong> et dans des environnements collaboratifs
-      <strong>Git/GitHub</strong>.
-    </p>
-  </div>
-</section>
-
-<section id="competences">
-  <div class="wrap">
-    <p class="eyebrow">Compétences</p>
-    <h2 class="title">Le tableau des temps</h2>
-    <div class="board">
-      <div class="cell">
-        <span class="code">01 — LANG</span>
-        <h3>Langages</h3>
-        <ul class="taglist">
-          <li>Python</li><li>Java</li><li>C</li><li>PHP</li><li>JavaScript</li><li>Node JS</li><li>Java EE</li><li>Java Swing</li>
-        </ul>
-      </div>
-      <div class="cell">
-        <span class="code">02 — FRMWK</span>
-        <h3>Frameworks &amp; bibliothèques</h3>
-        <ul class="taglist">
-          <li>Laravel</li><li>Bootstrap</li><li>TailwindCSS</li><li>Django</li><li>SpringBoot</li><li>React</li>
-        </ul>
-      </div>
-      <div class="cell">
-        <span class="code">03 — DATA</span>
-        <h3>Bases de données</h3>
-        <ul class="taglist">
-          <li>PostgreSQL</li><li>MongoDB</li>
-        </ul>
-      </div>
-      <div class="cell">
-        <span class="code">04 — TOOL</span>
-        <h3>Outils &amp; environnements</h3>
-        <ul class="taglist">
-          <li>VS Code</li><li>Linux Ubuntu</li><li>Apache</li><li>Docker</li><li>Git/GitHub</li>
-        </ul>
-      </div>
-      <div class="cell">
-        <span class="code">05 — MDL</span>
-        <h3>Conception &amp; modélisation</h3>
-        <ul class="taglist">
-          <li>UML</li><li>Cas d'utilisation</li><li>Diagrammes de classes</li><li>Diagrammes de séquence</li>
-        </ul>
-      </div>
-      <div class="cell">
-        <span class="code">06 — SEC</span>
-        <h3>Autres compétences</h3>
-        <ul class="taglist">
-          <li>Hébergement web</li><li>Sécurité applicative</li><li>Algorithmique</li>
-        </ul>
-      </div>
+<main>
+  <section class="hero" id="hero">
+    <p class="caps">Développeur full stack — DevOps chez Tafarama, Togo</p>
+    <h1><span><b>Bokopolo</b></span><span><b>Yahliou <em>Phinéas</em></b></span></h1>
+    <div class="hero-foot">
+      <p>Je transforme des idées en applications rapides, sûres et faciles à utiliser.</p>
+      <button class="enter" id="start">Entrer <span aria-hidden="true">→</span></button>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="projets">
-  <div class="wrap">
-    <p class="eyebrow">Projets</p>
-    <h2 class="title">Les temps de passage</h2>
-    <div class="track">
-
-      <div class="lap live">
-        <div class="lap-head">
-          <h3>SignAI</h3>
-          <span class="status live">En cours</span>
-        </div>
-        <p>Plateforme IA qui traduit la langue des signes en texte vocalisé, pour rendre la communication plus accessible.</p>
-        <div class="stack">IA · Traitement du signal · Vocalisation</div>
-      </div>
-
-      <div class="lap live">
-        <div class="lap-head">
-          <h3>Plateforme de sauvegarde de secrets</h3>
-          <span class="status live">En cours</span>
-        </div>
-        <p>Stockage sécurisé de documents, textes et messages vocaux, avec authentification par mot de passe et QR code.</p>
-        <div class="stack">Laravel · PostgreSQL · Sécurité applicative</div>
-      </div>
-
-      <div class="lap">
-        <div class="lap-head">
-          <h3>Mini-banque</h3>
-          <span class="status">Terminé</span>
-        </div>
-        <p>Application orientée objet permettant la création de comptes et la gestion des transactions.</p>
-        <div class="stack">Java · POO</div>
-      </div>
-
-      <div class="lap">
-        <div class="lap-head">
-          <h3>Application de gestion de stock</h3>
-          <span class="status">Terminé</span>
-        </div>
-        <p>Système complet de gestion des produits, des ventes et de l'inventaire.</p>
-        <div class="stack">Python</div>
-      </div>
-
-      <div class="lap">
-        <div class="lap-head">
-          <h3>Jeu de mémoire</h3>
-          <span class="status">Terminé</span>
-        </div>
-        <p>Mini-jeu interactif conçu pour la journée portes ouvertes de mon institut, avec animations, sons et détection de victoire.</p>
-        <div class="stack">HTML · CSS · JavaScript</div>
-      </div>
-
+  <article class="panel" id="profil">
+    <div class="p-head">
+      <div class="p-row"><span class="caps">01 — Profil</span><button class="close" aria-label="Fermer"></button></div>
+      <h2>Curieux, rigoureux, attiré par le défi.</h2>
     </div>
-  </div>
-</section>
-
-<section id="philosophie">
-  <div class="wrap">
-    <p class="eyebrow">Philosophie</p>
-    <h2 class="title">Ma ligne de départ</h2>
-    <div class="philo">
-      <p>« La programmation est un art : celui de transformer une idée abstraite en solution concrète, utile et belle. »</p>
-      <p>Chaque ligne de code est pour moi un moyen d'apprendre, d'innover et de créer de la valeur pour les autres. Mon objectif est de contribuer à des projets à impact réel, en combinant créativité, rigueur et esprit d'équipe.</p>
+    <div class="p-body">
+      <p>Développeur web full stack, en fin de formation à l'<strong>IFNTI</strong> de Sokodé, et <strong>responsable DevOps chez Tafarama</strong>, à Atakpamé.</p>
+      <p>Je conçois des solutions numériques qui allient <strong>performance, sécurité et simplicité d'utilisation</strong> — de l'idée au déploiement, sous Linux et en équipe sur Git.</p>
     </div>
-  </div>
-</section>
+  </article>
 
-<section id="objectifs">
-  <div class="wrap">
-    <p class="eyebrow">Objectifs</p>
-    <h2 class="title">Ce que je vise maintenant</h2>
-    <ul class="goals">
-      <li>
-        <span class="num">01</span>
-        <p>Approfondir mes compétences en <strong>développement full stack</strong> et en <strong>cybersécurité</strong> (notamment Fortinet).</p>
-      </li>
-      <li>
-        <span class="num">02</span>
-        <p>Participer à des <strong>projets open source ou collaboratifs</strong>.</p>
-      </li>
-      <li>
-        <span class="num">03</span>
-        <p>Intégrer un <strong>stage professionnel en développement web</strong> pour appliquer mes connaissances sur le terrain.</p>
-      </li>
-    </ul>
-  </div>
-</section>
+  <article class="panel" id="competences">
+    <div class="p-head">
+      <div class="p-row"><span class="caps">02 — Compétences</span><button class="close" aria-label="Fermer"></button></div>
+      <h2>La boîte à outils.</h2>
+    </div>
+    <div class="p-body">
+      <dl class="rows">
+        <div><dt class="caps">Langages</dt><dd>Python, Java, C, PHP, JavaScript, Node.js, Java EE, Java Swing</dd></div>
+        <div><dt class="caps">Frameworks</dt><dd>Laravel, Django, Spring Boot, React, Tailwind CSS, Bootstrap</dd></div>
+        <div><dt class="caps">Données</dt><dd>PostgreSQL, MongoDB</dd></div>
+        <div><dt class="caps">Outils</dt><dd>Docker, Git &amp; GitHub, Linux Ubuntu, Apache</dd></div>
+        <div><dt class="caps">Conception</dt><dd>UML — cas d'utilisation, classes, séquences</dd></div>
+        <div><dt class="caps">Aussi</dt><dd>Hébergement web, sécurité applicative, algorithmique</dd></div>
+      </dl>
+    </div>
+  </article>
 
-<section id="langues">
-  <div class="wrap">
-    <p class="eyebrow">Langues &amp; intérêts</p>
-    <h2 class="title">Hors piste</h2>
-    <div class="duo">
-      <div>
-        <h3>Langues parlées</h3>
-        <div class="bar-row">
-          <span class="lbl">Français</span>
-          <div class="bar-track"><div class="bar-fill" style="width:95%"></div></div>
-        </div>
-        <div class="bar-row">
-          <span class="lbl">Anglais</span>
-          <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
-        </div>
-        <div class="bar-row">
-          <span class="lbl">Kabyè</span>
-          <div class="bar-track"><div class="bar-fill" style="width:85%"></div></div>
-        </div>
-        <div class="bar-row">
-          <span class="lbl">Ewe</span>
-          <div class="bar-track"><div class="bar-fill" style="width:62%"></div></div>
-        </div>
-        <div class="bar-row">
-          <span class="lbl">Tem</span>
-          <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
-        </div>
+  <article class="panel" id="projets">
+    <div class="p-head">
+      <div class="p-row"><span class="caps">03 — Projets</span><button class="close" aria-label="Fermer"></button></div>
+      <h2>Ce que je construis.</h2>
+    </div>
+    <div class="p-body">
+      <div class="proj"><header><h3>LAO</h3><span class="caps live">En cours</span></header>
+        <p>Le « Duolingo africain » : apprendre les langues africaines, guidé par une mascotte caméléon animée.</p>
+        <small>Apprentissage des langues · Animation</small></div>
+      <div class="proj"><header><h3>SignAI</h3><span class="caps live">En cours</span></header>
+        <p>Une IA qui traduit la langue des signes en texte vocalisé.</p>
+        <small>IA · Traitement du signal</small></div>
+      <div class="proj"><header><h3>Coffre à secrets</h3><span class="caps live">En cours</span></header>
+        <p>Stockage sécurisé de documents, textes et messages vocaux, protégé par mot de passe et QR code.</p>
+        <small>Laravel · PostgreSQL</small></div>
+      <div class="proj"><header><h3>Mini-banque</h3><span class="caps">Terminé</span></header>
+        <p>Création de comptes et gestion des transactions.</p>
+        <small>Java</small></div>
+      <div class="proj"><header><h3>Gestion de stock</h3><span class="caps">Terminé</span></header>
+        <p>Produits, ventes et inventaire.</p>
+        <small>Python</small></div>
+      <div class="proj"><header><h3>Jeu de mémoire</h3><span class="caps">Terminé</span></header>
+        <p>Mini-jeu créé pour la journée portes ouvertes de mon institut.</p>
+        <small>HTML · CSS · JavaScript</small></div>
+    </div>
+  </article>
+
+  <article class="panel" id="philosophie">
+    <div class="p-head">
+      <div class="p-row"><span class="caps">04 — Philosophie</span><button class="close" aria-label="Fermer"></button></div>
+      <h2>La ligne de départ.</h2>
+    </div>
+    <div class="p-body">
+      <blockquote>« La programmation est un art : celui de transformer une idée abstraite en solution concrète, utile et belle. »</blockquote>
+      <p>Chaque ligne de code est un moyen d'apprendre, d'innover et de créer de la valeur pour les autres.</p>
+    </div>
+  </article>
+
+  <article class="panel" id="objectifs">
+    <div class="p-head">
+      <div class="p-row"><span class="caps">05 — Objectifs</span><button class="close" aria-label="Fermer"></button></div>
+      <h2>Ce que je vise.</h2>
+    </div>
+    <div class="p-body">
+      <ul class="goals">
+        <li><p>Aller plus loin en <strong>full stack</strong> et en <strong>cybersécurité</strong>, notamment Fortinet.</p></li>
+        <li><p>Faire grandir <strong>LAO</strong> et <strong>SignAI</strong> jusqu'à leurs premiers utilisateurs.</p></li>
+        <li><p>Contribuer à des projets <strong>open source</strong> et collaboratifs à impact réel.</p></li>
+      </ul>
+    </div>
+  </article>
+
+  <article class="panel" id="langues">
+    <div class="p-head">
+      <div class="p-row"><span class="caps">06 — Langues</span><button class="close" aria-label="Fermer"></button></div>
+      <h2>Hors piste.</h2>
+    </div>
+    <div class="p-body">
+      <div class="bar"><span>Français</span><i style="--w:95%"></i></div>
+      <div class="bar"><span>Kabyè</span><i style="--w:85%"></i></div>
+      <div class="bar"><span>Ewe</span><i style="--w:62%"></i></div>
+      <div class="bar"><span>Anglais</span><i style="--w:60%"></i></div>
+      <div class="bar"><span>Tem</span><i style="--w:60%"></i></div>
+      <p class="sub caps">En dehors du code</p>
+      <p>Athlétisme — sprint. Technologie, innovation, résolution de problèmes.</p>
+    </div>
+  </article>
+
+  <article class="panel" id="contact">
+    <div class="p-head">
+      <div class="p-row"><span class="caps">07 — Contact</span><button class="close" aria-label="Fermer"></button></div>
+      <h2>Franchissons la ligne ensemble.</h2>
+    </div>
+    <div class="p-body">
+      <div class="links">
+        <a href="mailto:bokopoloyahliou@gmail.com">bokopoloyahliou@gmail.com</a>
+        <a href="https://github.com/FreshyayaBePro" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/yahliou-bokopolo-01b14a413" target="_blank" rel="noopener">LinkedIn</a>
       </div>
-      <div>
-        <h3>Centres d'intérêt</h3>
-        <div class="chips">
-          <span>Athlétisme — sprint</span>
-          <span>Technologie</span>
-          <span>Innovation</span>
-          <span>Résolution de problèmes</span>
-        </div>
-      </div>
+      <p>Atakpamé, Togo</p>
     </div>
-  </div>
-</section>
+  </article>
+</main>
 
-<section id="contact" class="finish">
-  <div class="wrap">
-    <div class="checker" aria-hidden="true"></div>
-    <p class="eyebrow" style="justify-content:center;">Contact</p>
-    <h2>Franchissons la ligne ensemble</h2>
-    <p class="sub">Disponible pour un stage, une collaboration ou un projet open source.</p>
-    <div class="contact-row">
-      <a class="cbtn primary" href="mailto:bokopoloyahliou@gmail.com">bokopoloyahliou@gmail.com</a>
-      <a class="cbtn" href="https://github.com/FreshyayaBePro" target="_blank" rel="noopener">GitHub</a>
-      <a class="cbtn" href="https://www.linkedin.com/in/yahliou-bokopolo-01b14a413" target="_blank" rel="noopener">LinkedIn</a>
-    </div>
-    <p class="loc">Atakpamé, Togo</p>
-  </div>
-</section>
+<div class="dock caps" id="dock">
+  <button id="prev" aria-label="Rubrique précédente">←</button>
+  <span id="where" aria-live="polite"></span>
+  <button id="next" aria-label="Rubrique suivante">→</button>
+</div>
 
-<footer>© 2026 BOKOPOLO Yahliou Phinéas — Tous droits réservés.</footer>
+<footer class="caps">© 2026 Bokopolo Yahliou Phinéas</footer>
+<div class="grain" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="liquid" x="-10%" y="-25%" width="120%" height="150%" color-interpolation-filters="sRGB">
+    <feTurbulence id="liq-noise" type="fractalNoise" baseFrequency="0.011 0.019" numOctaves="2" seed="4" result="n"/>
+    <feDisplacementMap id="liq-disp" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
 
+<script src="vendor/three.min.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';s.onload=function(){window.__boot&&window.__boot()};s.onerror=function(){window.__boot&&window.__boot()};document.head.appendChild(s);"></script>
+<script>
+(function(){
+'use strict';
+
+/* ================= DONNÉES ================= */
+var SECTIONS = [
+  {id:'profil',      label:'Profil',      a:'#22d3ee', b:'#1d4ed8', size:2.2, orbit:14, angle:0.4, speed:.050, moons:1},
+  {id:'competences', label:'Compétences', a:'#a78bfa', b:'#5b21b6', size:2.9, orbit:22, angle:2.3, speed:.038, moons:6, ring:true},
+  {id:'projets',     label:'Projets',     a:'#ff5d8f', b:'#ff9f43', size:2.6, orbit:30, angle:4.4, speed:.030, moons:6},
+  {id:'philosophie', label:'Philosophie', a:'#ffd166', b:'#e85d04', size:1.8, orbit:37, angle:1.2, speed:.025, moons:0},
+  {id:'objectifs',   label:'Objectifs',   a:'#3ddc97', b:'#0e7490', size:2.1, orbit:44, angle:3.3, speed:.021, moons:3},
+  {id:'langues',     label:'Langues',     a:'#ff8a5b', b:'#c1272d', size:2.4, orbit:51, angle:5.5, speed:.018, moons:5, ring:true},
+  {id:'contact',     label:'Contact',     a:'#e0f2fe', b:'#38bdf8', size:2.0, orbit:58, angle:0.0, speed:.015, moons:3}
+];
+
+var $ = function(s){ return document.querySelector(s); };
+var body = document.body;
+var panels = {};
+SECTIONS.forEach(function(s){ panels[s.id] = document.getElementById(s.id); panels[s.id].style.setProperty('--c', s.a); });
+
+/* ================= UI ================= */
+var nav = $('#nav'), labelsEl = $('#labels'), where = $('#where'), modeBtn = $('#mode');
+var navBtns = [], labels = [];
+SECTIONS.forEach(function(s, i){
+  var b = document.createElement('button');
+  b.textContent = s.label;
+  b.addEventListener('click', function(){ focus(i); });
+  nav.appendChild(b); navBtns.push(b);
+
+  var l = document.createElement('button');
+  l.className = 'label hide'; l.textContent = s.label;
+  l.addEventListener('click', function(){ focus(i); });
+  labelsEl.appendChild(l); labels.push(l);
+});
+
+var current = -1;            // rubrique ouverte (-1 = aucune)
+var api = null;              // rempli par la scène 3D si elle démarre
+
+function setUI(i){
+  current = i; body.classList.toggle('viewing', i >= 0);
+  SECTIONS.forEach(function(s, k){
+    panels[s.id].classList.toggle('open', k === i);
+    navBtns[k].classList.toggle('on', k === i);
+  });
+  if (i >= 0){
+    body.classList.remove('home');
+    where.textContent = '0' + (i+1) + ' / 0' + SECTIONS.length;
+    navBtns[i].scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'});
+    try{ history.replaceState(null, '', '#' + SECTIONS[i].id); }catch(e){}
+  } else {
+    where.textContent = '—';
+    try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
+  }
+}
+function focus(i){
+  if (body.classList.contains('flat')){ panels[SECTIONS[i].id].scrollIntoView({behavior:'smooth'}); return; }
+  setUI(i); if (api) api.focus(i);
+}
+function overview(home){
+  setUI(-1); body.classList.toggle('home', !!home); if (api) api.overview();
+}
+function step(d){
+  var n = SECTIONS.length;
+  focus(current < 0 ? (d > 0 ? 0 : n-1) : (current + d + n) % n);
+}
+$('#start').addEventListener('click', function(){ focus(0); });
+$('#brand').addEventListener('click', function(){
+  if (body.classList.contains('flat')) window.scrollTo({top:0, behavior:'smooth'}); else overview(true);
+});
+$('#prev').addEventListener('click', function(){ step(-1); });
+$('#next').addEventListener('click', function(){ step(1); });
+document.querySelectorAll('.close').forEach(function(b){ b.addEventListener('click', function(){ overview(false); }); });
+
+function setFlat(on){
+  body.classList.toggle('flat', on);
+  modeBtn.textContent = on ? '3D' : 'Texte';
+  if (on){ setUI(-1); body.classList.add('home'); }
+  if (api) api.run(!on);
+  if (!on){ window.scrollTo(0,0); overview(true); }
+}
+modeBtn.addEventListener('click', function(){ setFlat(!body.classList.contains('flat')); });
+
+/* ================= TEXTE FLUIDE =================
+   Chaque lettre est une particule sur ressort : le curseur l'écarte et l'entraîne
+   dans son sillage, puis elle revient. Les grands titres ondulent en plus comme
+   une surface d'eau, proportionnellement à la vitesse du geste. */
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var groups = [];
+  function split(el){
+    el.setAttribute('aria-label', (el.innerText || el.textContent).replace(/\s+/g,' ').trim());
+    var chars = [];
+    (function walk(node){
+      Array.prototype.slice.call(node.childNodes).forEach(function(n){
+        if (n.nodeType === 3){
+          var frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(function(part){
+            if (!part) return;
+            if (/^\s+$/.test(part)){ frag.appendChild(document.createTextNode(' ')); return; }
+            var w = document.createElement('span'); w.className = 'w'; w.setAttribute('aria-hidden','true');
+            Array.from(part).forEach(function(c){
+              var sp = document.createElement('span'); sp.className = 'ch'; sp.textContent = c;
+              w.appendChild(sp); chars.push({el:sp, x:0, y:0, vx:0, vy:0});
+            });
+            frag.appendChild(w);
+          });
+          node.replaceChild(frag, n);
+        } else if (n.nodeType === 1) walk(n);
+      });
+    })(el);
+    groups.push({el:el, chars:chars, live:false, big:/^H[12]$/.test(el.tagName), panel:el.closest('.panel'), hero:el.closest('.hero'), nav:el.closest('.nav'), fs:16});
+  }
+  document.querySelectorAll('h1, h2, .proj h3, .links a, .brand, .nav button, .enter').forEach(function(el){
+    if (el.classList.contains('enter')) return;      // garde sa flèche animée
+    split(el);
+  });
+  function measure(){ groups.forEach(function(g){ g.fs = parseFloat(getComputedStyle(g.el).fontSize) || 16; }); }
+  measure(); window.addEventListener('resize', measure);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+
+  function shown(g){
+    var flat = body.classList.contains('flat');
+    if (g.panel) return flat || g.panel.classList.contains('open');
+    if (g.hero) return flat || body.classList.contains('home');
+    if (g.nav) return !flat;
+    return true;
+  }
+
+  var mx = -9999, my = -9999, pvx = 0, pvy = 0, lastT = 0, running = false;
+  var disp = document.getElementById('liq-disp'), noise = document.getElementById('liq-noise');
+  var energy = 0, liqEl = null, t0 = performance.now();
+
+  window.addEventListener('pointermove', function(e){
+    if (e.pointerType !== 'mouse') return;
+    var now = performance.now(), dt = Math.max(8, now - lastT);
+    if (mx > -9000 && dt < 120){ pvx = (e.clientX - mx) / dt * 16; pvy = (e.clientY - my) / dt * 16; }
+    mx = e.clientX; my = e.clientY; lastT = now;
+    if (!running){ running = true; requestAnimationFrame(tick); }
+  }, {passive:true});
+  document.addEventListener('mouseleave', function(){ mx = my = -9999; });
+
+  function tick(){
+    var any = false, speed = Math.min(60, Math.hypot(pvx, pvy)), nearBig = null;
+    for (var gi=0; gi<groups.length; gi++){
+      var g = groups[gi], near = false, R = Math.max(64, g.fs * 1.1);
+      if (shown(g)){
+        var r = g.el.getBoundingClientRect();
+        near = mx > r.left - R && mx < r.right + R && my > r.top - R && my < r.bottom + R;
+      }
+      if (!near && !g.live) continue;
+      if (near && g.big) nearBig = g;
+      var P = Math.max(.22, g.fs * .0135), live = false;
+      for (var ci=0; ci<g.chars.length; ci++){
+        var c = g.chars[ci], fx = 0, fy = 0;
+        if (near){
+          var b = c.el.getBoundingClientRect();
+          var dx = b.left + b.width/2 - c.x - mx, dy = b.top + b.height/2 - c.y - my, d = Math.hypot(dx, dy);
+          if (d < R){
+            var f = 1 - d/R; f *= f;
+            fx = dx/(d || 1) * f * P + pvx * f * .16;
+            fy = dy/(d || 1) * f * P + pvy * f * .16;
+          }
+        }
+        c.vx = (c.vx + fx - c.x * .075) * .87; c.vy = (c.vy + fy - c.y * .075) * .87;
+        c.x += c.vx; c.y += c.vy;
+        if (Math.abs(c.x) + Math.abs(c.y) + Math.abs(c.vx) + Math.abs(c.vy) > .06){
+          live = true;
+          c.el.style.transform = 'translate(' + c.x.toFixed(2) + 'px,' + c.y.toFixed(2) + 'px) rotate(' + (c.vx * .9).toFixed(2) + 'deg)';
+        } else if (c.x || c.y){ c.x = c.y = c.vx = c.vy = 0; c.el.style.transform = ''; }
+      }
+      g.live = live; any = any || live;
+    }
+
+    // ondulation liquide du grand titre survolé
+    if (nearBig && nearBig.el !== liqEl){ if (liqEl) liqEl.style.filter = ''; liqEl = nearBig.el; }
+    energy = energy * .93 + (nearBig ? speed * .09 : 0);
+    if (liqEl){
+      var k = Math.min(1, Math.max(.35, (nearBig || {fs:60}).fs / 130));
+      var sc = Math.min(34, energy) * k;
+      if (sc > .5){
+        var tt = (performance.now() - t0) / 1000;
+        disp.setAttribute('scale', sc.toFixed(2));
+        noise.setAttribute('baseFrequency', (0.011 + Math.sin(tt*.9)*.002).toFixed(4) + ' ' + (0.019 + Math.cos(tt*.7)*.003).toFixed(4));
+        liqEl.style.filter = 'url(#liquid)'; any = true;
+      } else { liqEl.style.filter = ''; if (!nearBig) liqEl = null; }
+    }
+
+    pvx *= .8; pvy *= .8;
+    if (any || speed > .2) requestAnimationFrame(tick); else running = false;
+  }
+})();
+
+/* ================= DÉMARRAGE ================= */
+var booted = false;
+window.__boot = function(){
+  if (booted) return; booted = true;
+  var ok = false;
+  try{ ok = !!window.THREE && initScene(); }catch(e){ console.error(e); ok = false; }
+  if (!ok){ setFlat(true); modeBtn.style.display = 'none'; }
+  else if (matchMedia('(prefers-reduced-motion: reduce)').matches){ setFlat(true); }
+  else {
+    var h = location.hash.slice(1);
+    var idx = SECTIONS.findIndex(function(s){ return s.id === h; });
+    if (idx >= 0) setTimeout(function(){ focus(idx); }, 1200);
+  }
+  $('#loader').classList.add('done');
+  setTimeout(function(){ body.classList.add('ready'); }, 350);
+  setTimeout(function(){ body.classList.add('revealed'); }, 2400);
+};
+
+/* ================= SCÈNE 3D ================= */
+function initScene(){
+  var THREE = window.THREE;
+  var canvas = $('#scene');
+  var renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x000000, 1);
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(50, 1, 0.1, 6000);
+  var W = 1, H = 1;
+
+  /* ---- textures procédurales ---- */
+  function glowTexture(stops){
+    var c = document.createElement('canvas'); c.width = c.height = 128;
+    var g = c.getContext('2d'), gr = g.createRadialGradient(64,64,0,64,64,64);
+    stops.forEach(function(s){ gr.addColorStop(s[0], s[1]); });
+    g.fillStyle = gr; g.fillRect(0,0,128,128);
+    return new THREE.CanvasTexture(c);
+  }
+  var texGlow = glowTexture([[0,'rgba(255,255,255,1)'],[.25,'rgba(255,255,255,.45)'],[.6,'rgba(255,255,255,.1)'],[1,'rgba(255,255,255,0)']]);
+  var texSoft = glowTexture([[0,'rgba(255,255,255,.7)'],[.5,'rgba(255,255,255,.18)'],[1,'rgba(255,255,255,0)']]);
+
+  function glow(color, scale, opacity, tex){
+    var s = new THREE.Sprite(new THREE.SpriteMaterial({map:tex || texGlow, color:color, blending:THREE.AdditiveBlending, depthWrite:false, transparent:true, opacity:opacity}));
+    s.scale.setScalar(scale); return s;
+  }
+
+  /* ---- shaders ---- */
+  var NOISE = [
+    'float hash(vec3 p){p=fract(p*0.3183099+.1);p*=17.0;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}',
+    'float noise(vec3 x){vec3 i=floor(x);vec3 f=fract(x);f=f*f*(3.0-2.0*f);',
+    ' return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),',
+    '            mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);}',
+    'float fbm(vec3 p){float a=.5,s=0.;for(int i=0;i<4;i++){s+=a*noise(p);p*=2.02;a*=.5;}return s;}'
+  ].join('\n');
+  var VERT = [
+    'varying vec3 vP; varying vec3 vN; varying vec3 vW;',
+    'void main(){ vP=normalize(position); vN=normalize(mat3(modelMatrix)*normal);',
+    ' vec4 w=modelMatrix*vec4(position,1.0); vW=w.xyz; gl_Position=projectionMatrix*viewMatrix*w; }'
+  ].join('\n');
+  var PLANET_FRAG = [
+    'precision highp float;',
+    'uniform vec3 uA; uniform vec3 uB; uniform float uTime; uniform float uSeed; uniform float uHot;',
+    'varying vec3 vP; varying vec3 vN; varying vec3 vW;', NOISE,
+    'void main(){',
+    ' vec3 p=vP*2.2+uSeed;',
+    ' float w=fbm(p*1.4+uTime*.03);',
+    ' float n=fbm(vec3(p.x*.7,p.y*2.6,p.z*.7)+w*1.3);',
+    ' vec3 col=mix(uB,uA,smoothstep(.28,.72,n));',
+    ' col=mix(col,vec3(1.0),smoothstep(.6,.85,fbm(p*3.1+9.))*.28);',
+    ' vec3 N=normalize(vN); vec3 L=normalize(-vW); vec3 V=normalize(cameraPosition-vW);',
+    ' float d=dot(N,L); float diff=smoothstep(-.25,.9,d);',
+    ' float fres=pow(1.0-max(dot(N,V),0.0),2.4);',
+    ' col=col*(.06+1.1*diff)+uA*fres*(.25+.9*diff)+uA*uHot*.1;',
+    ' gl_FragColor=vec4(col,1.0);',
+    '}'
+  ].join('\n');
+  var SUN_FRAG = [   // étoile blanche : aucune teinte, seulement de la lumière
+    'precision highp float;',
+    'uniform float uTime; varying vec3 vP; varying vec3 vN; varying vec3 vW;', NOISE,
+    'void main(){',
+    ' vec3 p=vP*2.8;',
+    ' float n=fbm(p+vec3(0.,uTime*.12,0.)+fbm(p*2.+uTime*.08)*1.3);',
+    ' float l=mix(.78,1.0,smoothstep(.2,.75,n));',
+    ' vec3 V=normalize(cameraPosition-vW); float f=pow(1.0-max(dot(normalize(vN),V),0.0),1.6);',
+    ' gl_FragColor=vec4(vec3(l+f*.9),1.0);',
+    '}'
+  ].join('\n');
+  var RING_VERT = 'varying vec3 vP; void main(){ vP=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }';
+  var RING_FRAG = [
+    'precision highp float; uniform vec3 uCol; uniform float uIn; uniform float uOut; varying vec3 vP;',
+    'void main(){ float r=(length(vP.xy)-uIn)/(uOut-uIn);',
+    ' float band=.3+.7*fract(sin(floor(r*16.)*91.7)*43758.5);',
+    ' float a=smoothstep(0.,.06,r)*smoothstep(1.,.9,r)*band;',
+    ' gl_FragColor=vec4(mix(uCol,vec3(1.0),.25*band),a*.6); }'
+  ].join('\n');
+
+  /* ---- lumières (lunes, astéroïdes) ---- */
+  scene.add(new THREE.AmbientLight(0xffffff, .22));
+  scene.add(new THREE.PointLight(0xffffff, 2.6, 0, 0));
+
+  /* ---- ciel : étoiles, voie lactée ---- */
+  var sky = new THREE.Group(); scene.add(sky);
+  function points(pos, col, size, opacity, map, parent){
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    g.setAttribute('color', new THREE.BufferAttribute(col,3));
+    var m = new THREE.PointsMaterial({size:size, sizeAttenuation:!!map, vertexColors:true, transparent:true, opacity:opacity, depthWrite:false, blending:THREE.AdditiveBlending});
+    if (map) m.map = map;
+    var p = new THREE.Points(g, m); (parent || scene).add(p); return p;
+  }
+  function starLayer(count, rMin, rMax, size, opacity, map, parent){
+    var pos = new Float32Array(count*3), col = new Float32Array(count*3);
+    for (var i=0;i<count;i++){
+      var u = Math.random()*2-1, t = Math.random()*Math.PI*2, r = rMin + Math.random()*(rMax-rMin), s = Math.sqrt(1-u*u);
+      pos[i*3] = r*s*Math.cos(t); pos[i*3+1] = r*u; pos[i*3+2] = r*s*Math.sin(t);
+      var k = .3 + Math.pow(Math.random(), 2)*.7;
+      col[i*3] = k; col[i*3+1] = k; col[i*3+2] = k;
+    }
+    return points(pos, col, size, opacity, map, parent);
+  }
+  function gauss(){ return (Math.random()+Math.random()+Math.random()+Math.random()-2)/2; }
+  var small = Math.min(window.innerWidth, window.innerHeight) < 700;
+  starLayer(small ? 3000 : 7000, 700, 2600, 1.2, .9, null, sky);
+  starLayer(small ? 200 : 450, 700, 2400, 16, .9, texGlow, sky);
+  var dust = starLayer(small ? 200 : 450, 10, 120, .7, .45, texGlow);
+
+  // voie lactée : un fleuve d'étoiles incliné qui traverse tout le ciel
+  var milky = new THREE.Group(); milky.rotation.set(1.05, 0, .45); sky.add(milky);
+  (function(){
+    var n = small ? 6000 : 16000, pos = new Float32Array(n*3), col = new Float32Array(n*3);
+    for (var i=0;i<n;i++){
+      var t = Math.random()*Math.PI*2, r = 1500 + Math.random()*1200;
+      var thick = 90 + 260*Math.pow(Math.abs(Math.sin(t*1.0 + .6)), 2);
+      pos[i*3] = Math.cos(t)*r; pos[i*3+1] = gauss()*thick; pos[i*3+2] = Math.sin(t)*r;
+      var k = .15 + Math.random()*.5;
+      col[i*3] = k; col[i*3+1] = k; col[i*3+2] = k;
+    }
+    points(pos, col, 1.1, .8, null, milky);
+    for (var j=0;j<26;j++){
+      var a = j/26*Math.PI*2 + Math.random()*.2, rr = 2100;
+      var s = glow(0xffffff, 700 + Math.random()*700, .035 + .05*Math.pow(Math.abs(Math.sin(a + .6)), 2), texSoft);
+      s.position.set(Math.cos(a)*rr, gauss()*80, Math.sin(a)*rr); milky.add(s);
+    }
+  })();
+
+  /* ---- étoile centrale ---- */
+  var sunU = {uTime:{value:0}};
+  var sun = new THREE.Mesh(new THREE.SphereGeometry(5,64,64), new THREE.ShaderMaterial({uniforms:sunU, vertexShader:VERT, fragmentShader:SUN_FRAG}));
+  scene.add(sun);
+  // éclat : halo serré très lumineux, grande aura douce, et rayons fins qui scintillent
+  var sunHalo = glow(0xffffff, 24, 1); scene.add(sunHalo);
+  scene.add(glow(0xffffff, 46, .5));
+  scene.add(glow(0xffffff, 130, .16, texSoft));
+  function raysTexture(seed){
+    var c = document.createElement('canvas'); c.width = c.height = 512;
+    var g = c.getContext('2d'); g.translate(256,256);
+    var rnd = function(){ seed = (seed*9301 + 49297) % 233280; return seed/233280; };
+    for (var i=0;i<90;i++){
+      var a = rnd()*Math.PI*2, len = 90 + rnd()*rnd()*166, w = .004 + rnd()*.014;
+      var gr = g.createLinearGradient(0,0,Math.cos(a)*len,Math.sin(a)*len);
+      gr.addColorStop(0,'rgba(255,255,255,' + (.25 + rnd()*.5) + ')'); gr.addColorStop(1,'rgba(255,255,255,0)');
+      g.fillStyle = gr; g.beginPath(); g.moveTo(0,0);
+      g.lineTo(Math.cos(a-w)*len, Math.sin(a-w)*len); g.lineTo(Math.cos(a+w)*len, Math.sin(a+w)*len); g.closePath(); g.fill();
+    }
+    return new THREE.CanvasTexture(c);
+  }
+  var rays1 = glow(0xffffff, 64, .5, raysTexture(7)), rays2 = glow(0xffffff, 50, .4, raysTexture(31));
+  scene.add(rays1, rays2);
+
+  /* ---- planètes : la seule couleur du site ---- */
+  var planets = [], pickables = [sun];
+  sun.userData.index = -1;
+  SECTIONS.forEach(function(s, i){
+    var group = new THREE.Group();
+    var cA = new THREE.Color(s.a);
+    var hexA = parseInt(s.a.slice(1),16), hexB = parseInt(s.b.slice(1),16);
+    var uni = {
+      uA:{value:new THREE.Vector3((hexA>>16&255)/255,(hexA>>8&255)/255,(hexA&255)/255)},
+      uB:{value:new THREE.Vector3((hexB>>16&255)/255,(hexB>>8&255)/255,(hexB&255)/255)},
+      uTime:{value:0}, uSeed:{value:i*13.7+2.1}, uHot:{value:0}
+    };
+    var mesh = new THREE.Mesh(new THREE.SphereGeometry(s.size,48,48), new THREE.ShaderMaterial({uniforms:uni, vertexShader:VERT, fragmentShader:PLANET_FRAG}));
+    mesh.rotation.z = (i%2 ? -1 : 1) * (.2 + i*.05);
+    group.add(mesh);
+    var halo = glow(s.a, s.size*4.2, .28); group.add(halo);
+
+    if (s.ring){
+      var rin = s.size*1.45, rout = s.size*2.35;
+      var ring = new THREE.Mesh(new THREE.RingGeometry(rin, rout, 96),
+        new THREE.ShaderMaterial({uniforms:{uCol:uni.uA, uIn:{value:rin}, uOut:{value:rout}}, vertexShader:RING_VERT, fragmentShader:RING_FRAG, transparent:true, side:THREE.DoubleSide, depthWrite:false}));
+      ring.rotation.x = Math.PI/2 - .35; ring.rotation.y = .25;
+      group.add(ring);
+    }
+
+    var moons = [];
+    for (var m=0; m<s.moons; m++){
+      var pivot = new THREE.Group();
+      pivot.rotation.x = (Math.random()-.5)*.9; pivot.rotation.z = (Math.random()-.5)*.9;
+      var mm = new THREE.Mesh(new THREE.IcosahedronGeometry(.16 + Math.random()*.14, 1),
+        new THREE.MeshStandardMaterial({color:0xd8d8d8, roughness:.7, metalness:.1, flatShading:true}));
+      pivot.add(mm); group.add(pivot);
+      moons.push({mesh:mm, r:s.size*(s.ring ? 2.7 : 1.7) + m*.45, speed:(.5 + Math.random()*.5)*(m%2 ? -1 : 1), phase:Math.random()*6.28});
+    }
+
+    var pick = new THREE.Mesh(new THREE.SphereGeometry(s.size*1.9,12,12), new THREE.MeshBasicMaterial({transparent:true, opacity:0, depthWrite:false}));
+    pick.userData.index = i; group.add(pick); pickables.push(pick);
+
+    var pts = [];
+    for (var k=0; k<=180; k++){ var a = k/180*Math.PI*2; pts.push(new THREE.Vector3(Math.cos(a)*s.orbit, 0, Math.sin(a)*s.orbit)); }
+    var orbit = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({color:0xffffff, transparent:true, opacity:.1}));
+    scene.add(orbit);
+
+    scene.add(group);
+    planets.push({s:s, group:group, mesh:mesh, uni:uni, halo:halo, moons:moons, orbit:orbit, angle:s.angle, y:Math.sin(i*1.9)*1.2, hot:0});
+  });
+
+  /* ---- ceinture d'astéroïdes ---- */
+  var beltCount = small ? 300 : 800;
+  var belt = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0), new THREE.MeshStandardMaterial({color:0x9a9a9a, roughness:.9, flatShading:true}), beltCount);
+  var dummy = new THREE.Object3D();
+  for (var b=0; b<beltCount; b++){
+    var ba = Math.random()*Math.PI*2, br = 68 + Math.random()*12 + (Math.random()-.5)*4;
+    dummy.position.set(Math.cos(ba)*br, (Math.random()-.5)*3, Math.sin(ba)*br);
+    dummy.rotation.set(Math.random()*6, Math.random()*6, Math.random()*6);
+    dummy.scale.setScalar(.08 + Math.random()*Math.random()*.5);
+    dummy.updateMatrix(); belt.setMatrixAt(b, dummy.matrix);
+  }
+  scene.add(belt);
+
+  /* ---- caméra : orbite amortie ---- */
+  var cur  = {t:new THREE.Vector3(0,0,0), r:1500, th:-2.2, ph:.5, ox:0, oy:0};   // on arrive de très loin
+  var goal = {t:new THREE.Vector3(0,0,0), r:92,   th:.5,   ph:1.1, ox:0, oy:0};
+  var focused = -1, lastInput = 0, orbitFactor = 1;
+  var PH_MIN = .15, PH_MAX = Math.PI - .15, R_MIN = 5, R_MAX = 620;
+
+  function mobile(){ return W <= 820; }
+  function overviewRadius(){ return 92 * Math.max(1, 1.25 / (W/H)); }
+  function setOffsets(){
+    if (focused >= 0){
+      if (mobile()){ goal.ox = 0; goal.oy = H*.29; }
+      else { var pw = panels[SECTIONS[focused].id].offsetWidth || 480; goal.ox = (pw - 50)/2; goal.oy = 0; }
+    } else if (body.classList.contains('home')){
+      if (mobile()){ goal.ox = 0; goal.oy = H*.24; } else { goal.ox = -W*.05; goal.oy = H*.17; }
+    } else { goal.ox = 0; goal.oy = 0; }
+  }
+  function nearestAngle(target, from){
+    var d = (target - from) % (Math.PI*2);
+    if (d > Math.PI) d -= Math.PI*2; if (d < -Math.PI) d += Math.PI*2;
+    return from + d;
+  }
+  function focusPlanet(i){
+    focused = i;
+    var p = planets[i], pos = p.group.position;
+    goal.r = p.s.size * (mobile() ? 7.5 : 5.6);
+    goal.ph = 1.32;
+    goal.th = nearestAngle(Math.atan2(-pos.x, -pos.z) + .8, cur.th);
+    setOffsets();
+  }
+  function goOverview(){
+    focused = -1;
+    goal.t.set(0,0,0); goal.r = overviewRadius(); goal.ph = 1.1;
+    lastInput = 0; setOffsets();
+  }
+  function release(){           // l'utilisateur part en vol libre
+    if (focused >= 0 || body.classList.contains('home')){
+      focused = -1; setUI(-1); body.classList.remove('home'); setOffsets();
+    }
+  }
+  function touched(){ lastInput = performance.now(); if (!body.classList.contains('touched')) body.classList.add('touched'); }
+
+  /* ---- interactions ---- */
+  var pointers = {}, nPointers = 0, dragDist = 0, pinch = 0, downAt = null;
+  var ray = new THREE.Raycaster(), mouse = new THREE.Vector2(), hoverIdx = -2, mouseDirty = false, mouseXY = [0,0];
+
+  function pickAt(x, y){
+    mouse.set(x/W*2 - 1, -(y/H*2 - 1));   // le décalage de vue est déjà dans la matrice de projection
+    ray.setFromCamera(mouse, camera);
+    var hit = ray.intersectObjects(pickables, false)[0];
+    return hit ? hit.object.userData.index : -2;
+  }
+  function pinchDist(){
+    var k = Object.keys(pointers); if (k.length < 2) return 0;
+    var a = pointers[k[0]], b2 = pointers[k[1]];
+    return Math.hypot(a[0]-b2[0], a[1]-b2[1]);
+  }
+  canvas.addEventListener('pointerdown', function(e){
+    canvas.setPointerCapture(e.pointerId);
+    pointers[e.pointerId] = [e.clientX, e.clientY]; nPointers++;
+    if (nPointers === 1){ dragDist = 0; downAt = [e.clientX, e.clientY]; }
+    if (nPointers === 2){ pinch = pinchDist(); dragDist = 99; }
+    canvas.classList.add('dragging'); lastInput = performance.now();
+  });
+  canvas.addEventListener('pointermove', function(e){
+    mouseXY = [e.clientX, e.clientY]; mouseDirty = e.pointerType === 'mouse';
+    var p = pointers[e.pointerId]; if (!p) return;
+    var dx = e.clientX - p[0], dy = e.clientY - p[1];
+    p[0] = e.clientX; p[1] = e.clientY;
+    if (nPointers === 1){
+      dragDist += Math.abs(dx) + Math.abs(dy);
+      goal.th -= dx * .0055;
+      goal.ph = Math.min(PH_MAX, Math.max(PH_MIN, goal.ph - dy * .0045));
+      if (dragDist > 8) touched();
+    } else if (nPointers === 2){
+      var d = pinchDist();
+      if (pinch > 0 && d > 0) goal.r = Math.min(R_MAX, Math.max(R_MIN, goal.r * pinch / d));
+      pinch = d; touched();
+    }
+  });
+  function up(e){
+    if (!pointers[e.pointerId]) return;
+    delete pointers[e.pointerId]; nPointers--;
+    if (nPointers <= 0){
+      nPointers = 0; canvas.classList.remove('dragging');
+      if (e.type === 'pointerup' && dragDist < 8 && downAt){
+        var idx = pickAt(e.clientX, e.clientY);
+        if (idx >= 0) focus(idx);
+        else if (idx === -1) overview(true);
+      }
+    }
+  }
+  canvas.addEventListener('pointerup', up);
+  canvas.addEventListener('pointercancel', up);
+  canvas.addEventListener('wheel', function(e){
+    e.preventDefault();
+    var d = e.deltaMode === 1 ? e.deltaY * 30 : e.deltaY;
+    goal.r = Math.min(R_MAX, Math.max(R_MIN, goal.r * Math.exp(d * .0012)));
+    touched();
+  }, {passive:false});
+
+  var keys = {};
+  var MOVE = {ArrowUp:'f', KeyW:'f', ArrowDown:'b', KeyS:'b', ArrowLeft:'l', KeyA:'l', ArrowRight:'r', KeyD:'r'};
+  window.addEventListener('keydown', function(e){
+    if (body.classList.contains('flat') || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.code === 'Escape'){ if (current >= 0) overview(false); return; }
+    if (MOVE[e.code]){ keys[MOVE[e.code]] = true; e.preventDefault(); }
+  });
+  window.addEventListener('keyup', function(e){ if (MOVE[e.code]) keys[MOVE[e.code]] = false; });
+  window.addEventListener('blur', function(){ keys = {}; });
+
+  /* ---- redimensionnement ---- */
+  function resize(){
+    W = window.innerWidth; H = window.innerHeight;
+    renderer.setSize(W, H, false);
+    camera.aspect = W/H; camera.updateProjectionMatrix();
+    if (focused < 0 && !lastInput) goal.r = overviewRadius();
+    setOffsets();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  /* ---- boucle ---- */
+  var clock = new THREE.Clock(), running = true, raf = 0, t = 0;
+  var v = new THREE.Vector3(), fwd = new THREE.Vector3(), right = new THREE.Vector3();
+  var focalK = 1 / (2 * Math.tan(camera.fov * Math.PI / 360));
+
+  function frame(){
+    raf = requestAnimationFrame(frame);
+    var dt = Math.min(clock.getDelta(), .05); t += dt;
+    var now = performance.now();
+
+    orbitFactor += ((focused >= 0 ? 0 : 1) - orbitFactor) * Math.min(1, dt*3);
+    sunU.uTime.value = t;
+    sun.rotation.y = t*.05; rays1.material.rotation = t*.02; rays2.material.rotation = -t*.03;
+    rays1.material.opacity = .42 + Math.sin(t*.7)*.1; rays2.material.opacity = .34 + Math.sin(t*1.1 + 2)*.1; sunHalo.scale.setScalar(24 + Math.sin(t*.9)*.8);
+    for (var i=0; i<planets.length; i++){
+      var p = planets[i];
+      p.angle += p.s.speed * dt * orbitFactor;
+      p.group.position.set(Math.cos(p.angle)*p.s.orbit, p.y, Math.sin(p.angle)*p.s.orbit);
+      p.mesh.rotation.y += dt * .18;
+      p.uni.uTime.value = t;
+      var hot = (i === hoverIdx || i === focused) ? 1 : 0;
+      p.hot += (hot - p.hot) * Math.min(1, dt*8);
+      p.uni.uHot.value = p.hot;
+      p.halo.material.opacity = .26 + p.hot*.25;
+      p.orbit.material.opacity = .09 + p.hot*.4;
+      for (var m=0; m<p.moons.length; m++){
+        var mo = p.moons[m], a = mo.phase + t*mo.speed;
+        mo.mesh.position.set(Math.cos(a)*mo.r, 0, Math.sin(a)*mo.r);
+        mo.mesh.rotation.y += dt;
+      }
+    }
+    belt.rotation.y = t*.012; sky.rotation.y = t*.003; dust.rotation.y = -t*.01;
+
+    // déplacement clavier
+    var mx = (keys.r?1:0) - (keys.l?1:0), mz = (keys.f?1:0) - (keys.b?1:0);
+    if (mx || mz){
+      release(); touched();
+      camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
+      right.set(-fwd.z, 0, fwd.x);
+      var sp = Math.max(8, goal.r*.7) * dt;
+      goal.t.addScaledVector(fwd, mz*sp).addScaledVector(right, mx*sp);
+      if (goal.t.length() > 200) goal.t.setLength(200);
+    }
+    if (focused >= 0) goal.t.copy(planets[focused].group.position);
+    else if (!nPointers && now - lastInput > 3500) goal.th += dt * .03;   // dérive douce au repos
+    if (focused < 0) goal.r = Math.max(goal.r, 36 - Math.min(31, goal.t.length()));   // on ne plonge pas dans l'étoile : l'écran resterait blanc
+
+    // amortissement
+    var k = 1 - Math.exp(-dt*(cur.r > 300 ? 1.5 : 3.2)), k2 = 1 - Math.exp(-dt*(cur.r > 300 ? 1.5 : 7));
+    cur.t.lerp(goal.t, focused >= 0 ? k2*.6 + k*.4 : k);
+    cur.r += (goal.r - cur.r)*k; cur.th += (goal.th - cur.th)*k2; cur.ph += (goal.ph - cur.ph)*k2;
+    cur.ox += (goal.ox - cur.ox)*k; cur.oy += (goal.oy - cur.oy)*k;
+    var sp2 = Math.sin(cur.ph);
+    camera.position.set(cur.t.x + cur.r*sp2*Math.sin(cur.th), cur.t.y + cur.r*Math.cos(cur.ph), cur.t.z + cur.r*sp2*Math.cos(cur.th));
+    camera.lookAt(cur.t);
+    if (Math.abs(cur.ox) > .5 || Math.abs(cur.oy) > .5) camera.setViewOffset(W, H, cur.ox, cur.oy, W, H);
+    else camera.clearViewOffset();
+    camera.updateMatrixWorld();
+
+    // survol
+    if (mouseDirty && !nPointers){
+      mouseDirty = false;
+      var h = pickAt(mouseXY[0], mouseXY[1]);
+      if (h !== hoverIdx){
+        hoverIdx = h; canvas.classList.toggle('hover', h >= -1);
+        for (var q=0; q<labels.length; q++) labels[q].classList.toggle('hot', q === h);
+      }
+    }
+
+    renderer.render(scene, camera);
+
+    // étiquettes : masquées de très loin (le système n'est plus qu'un point) et de très près
+    var far = cur.r > 240;
+    for (var j=0; j<planets.length; j++){
+      var pl = planets[j], el = labels[j];
+      v.copy(pl.group.position);
+      var dist = v.distanceTo(camera.position);
+      v.project(camera);
+      var visible = !far && focused < 0 && v.z < 1 && v.z > -1 && Math.abs(v.x) < 1.15 && Math.abs(v.y) < 1.15;
+      el.classList.toggle('hide', !visible);
+      if (visible){
+        var sx = (v.x*.5 + .5)*W, sy = (-v.y*.5 + .5)*H;
+        var rad = pl.s.size / dist * H * focalK;
+        el.style.transform = 'translate3d(' + sx.toFixed(1) + 'px,' + (sy + rad + 8).toFixed(1) + 'px,0) translateX(-50%)';
+      }
+    }
+  }
+
+  api = {
+    focus: focusPlanet,
+    overview: goOverview,
+    run: function(on){
+      if (on && !running){ running = true; clock.getDelta(); resize(); frame(); }
+      else if (!on && running){ running = false; cancelAnimationFrame(raf); }
+    }
+  };
+  new MutationObserver(setOffsets).observe(body, {attributes:true, attributeFilter:['class']});
+
+  frame();
+  return true;
+}
+
+if (window.THREE) window.__boot();
+else window.addEventListener('load', function(){ setTimeout(function(){ window.__boot(); }, window.THREE ? 0 : 2500); });
+})();
+</script>
 </body>
 </html>
