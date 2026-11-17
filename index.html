@@ -95,8 +95,8 @@
   .hero-foot{display:flex; align-items:flex-end; justify-content:space-between; gap:30px; margin-top:26px; padding-top:20px; border-top:1px solid var(--line);}
   .hero-foot p{margin:0; color:var(--dim); max-width:40ch; line-height:1.55; font-size:.98rem;}
   .enter{font-family:var(--serif); font-size:1.7rem; line-height:1; white-space:nowrap; display:inline-flex; gap:14px; align-items:baseline;}
-  .enter span{display:inline-block; transition:transform .3s;}
-  .enter:hover span{transform:translateX(8px);}
+  .enter span[aria-hidden]{display:inline-block; transition:transform .3s;}
+  .enter:hover span[aria-hidden]{transform:translateX(8px);}
 
   /* ---------- étiquettes des planètes ---------- */
   .labels{position:fixed; inset:0; z-index:5; pointer-events:none; overflow:hidden;}
@@ -142,6 +142,9 @@
   .proj .live{color:var(--fg);}
   .proj p{margin:0 0 8px;}
   .proj small{color:var(--mute); font-size:.82rem;}
+  .proj h3 a{text-decoration:none; border-bottom:1px solid var(--line); transition:border-color .2s;}
+  .proj h3 a:hover{border-color:var(--fg);}
+  .empty{color:var(--mute);}
 
   blockquote{margin:0 0 28px; font-family:var(--serif); font-style:italic; font-size:clamp(1.5rem,2.3vw,2rem); line-height:1.25; color:var(--fg);}
 
@@ -223,131 +226,20 @@
 <div class="labels caps" id="labels"></div>
 
 <header class="top">
-  <button class="brand" id="brand" >Freshyaya</button>
+  <button class="brand" id="brand"></button>
   <nav class="nav caps" id="nav" aria-label="Rubriques"></nav>
   <button class="mode caps" id="mode">Texte</button>
 </header>
 
-<main>
+<main id="main">
   <section class="hero" id="hero">
-    <p class="caps">Développeur full stack — DevOps chez Tafarama, Togo</p>
-    <h1><span><b>Bokopolo</b></span><span><b>Yahliou <em>Phinéas</em></b></span></h1>
+    <p class="caps" id="tagline"></p>
+    <h1 id="name"></h1>
     <div class="hero-foot">
-      <p>Je transforme des idées en applications rapides, sûres et faciles à utiliser.</p>
-      <button class="enter" id="start">Entrer <span aria-hidden="true">→</span></button>
+      <p id="intro"></p>
+      <button class="enter" id="start"><span id="enter-label"></span> <span aria-hidden="true">→</span></button>
     </div>
   </section>
-
-  <article class="panel" id="profil">
-    <div class="p-head">
-      <div class="p-row"><span class="caps">01 — Profil</span><button class="close" aria-label="Fermer"></button></div>
-      <h2>Curieux, rigoureux, attiré par le défi.</h2>
-    </div>
-    <div class="p-body">
-      <p>Développeur web full stack, en fin de formation à l'<strong>IFNTI</strong> de Sokodé, et <strong>responsable DevOps chez Tafarama</strong>, à Atakpamé.</p>
-      <p>Je conçois des solutions numériques qui allient <strong>performance, sécurité et simplicité d'utilisation</strong> — de l'idée au déploiement, sous Linux et en équipe sur Git.</p>
-    </div>
-  </article>
-
-  <article class="panel" id="competences">
-    <div class="p-head">
-      <div class="p-row"><span class="caps">02 — Compétences</span><button class="close" aria-label="Fermer"></button></div>
-      <h2>La boîte à outils.</h2>
-    </div>
-    <div class="p-body">
-      <dl class="rows">
-        <div><dt class="caps">Langages</dt><dd>Python, Java, C, PHP, JavaScript, Node.js, Java EE, Java Swing</dd></div>
-        <div><dt class="caps">Frameworks</dt><dd>Laravel, Django, Spring Boot, React, Tailwind CSS, Bootstrap</dd></div>
-        <div><dt class="caps">Données</dt><dd>PostgreSQL, MongoDB</dd></div>
-        <div><dt class="caps">Outils</dt><dd>Docker, Git &amp; GitHub, Linux Ubuntu, Apache</dd></div>
-        <div><dt class="caps">Conception</dt><dd>UML — cas d'utilisation, classes, séquences</dd></div>
-        <div><dt class="caps">Aussi</dt><dd>Hébergement web, sécurité applicative, algorithmique</dd></div>
-      </dl>
-    </div>
-  </article>
-
-  <article class="panel" id="projets">
-    <div class="p-head">
-      <div class="p-row"><span class="caps">03 — Projets</span><button class="close" aria-label="Fermer"></button></div>
-      <h2>Ce que je construis.</h2>
-    </div>
-    <div class="p-body">
-      <div class="proj"><header><h3>LAO</h3><span class="caps live">En cours</span></header>
-        <p>Le « Duolingo africain » : apprendre les langues africaines, guidé par une mascotte caméléon animée.</p>
-        <small>Apprentissage des langues · Animation</small></div>
-      <div class="proj"><header><h3>SignAI</h3><span class="caps live">En cours</span></header>
-        <p>Une IA qui traduit la langue des signes en texte vocalisé.</p>
-        <small>IA · Traitement du signal</small></div>
-      <div class="proj"><header><h3>Coffre à secrets</h3><span class="caps live">En cours</span></header>
-        <p>Stockage sécurisé de documents, textes et messages vocaux, protégé par mot de passe et QR code.</p>
-        <small>Laravel · PostgreSQL</small></div>
-      <div class="proj"><header><h3>Mini-banque</h3><span class="caps">Terminé</span></header>
-        <p>Création de comptes et gestion des transactions.</p>
-        <small>Java</small></div>
-      <div class="proj"><header><h3>Gestion de stock</h3><span class="caps">Terminé</span></header>
-        <p>Produits, ventes et inventaire.</p>
-        <small>Python</small></div>
-      <div class="proj"><header><h3>Jeu de mémoire</h3><span class="caps">Terminé</span></header>
-        <p>Mini-jeu créé pour la journée portes ouvertes de mon institut.</p>
-        <small>HTML · CSS · JavaScript</small></div>
-    </div>
-  </article>
-
-  <article class="panel" id="philosophie">
-    <div class="p-head">
-      <div class="p-row"><span class="caps">04 — Philosophie</span><button class="close" aria-label="Fermer"></button></div>
-      <h2>La ligne de départ.</h2>
-    </div>
-    <div class="p-body">
-      <blockquote>« La programmation est un art : celui de transformer une idée abstraite en solution concrète, utile et belle. »</blockquote>
-      <p>Chaque ligne de code est un moyen d'apprendre, d'innover et de créer de la valeur pour les autres.</p>
-    </div>
-  </article>
-
-  <article class="panel" id="objectifs">
-    <div class="p-head">
-      <div class="p-row"><span class="caps">05 — Objectifs</span><button class="close" aria-label="Fermer"></button></div>
-      <h2>Ce que je vise.</h2>
-    </div>
-    <div class="p-body">
-      <ul class="goals">
-        <li><p>Aller plus loin en <strong>full stack</strong> et en <strong>cybersécurité</strong>, notamment Fortinet.</p></li>
-        <li><p>Faire grandir <strong>LAO</strong> et <strong>SignAI</strong> jusqu'à leurs premiers utilisateurs.</p></li>
-        <li><p>Contribuer à des projets <strong>open source</strong> et collaboratifs à impact réel.</p></li>
-      </ul>
-    </div>
-  </article>
-
-  <article class="panel" id="langues">
-    <div class="p-head">
-      <div class="p-row"><span class="caps">06 — Langues</span><button class="close" aria-label="Fermer"></button></div>
-      <h2>Hors piste.</h2>
-    </div>
-    <div class="p-body">
-      <div class="bar"><span>Français</span><i style="--w:95%"></i></div>
-      <div class="bar"><span>Kabyè</span><i style="--w:85%"></i></div>
-      <div class="bar"><span>Ewe</span><i style="--w:62%"></i></div>
-      <div class="bar"><span>Anglais</span><i style="--w:60%"></i></div>
-      <div class="bar"><span>Tem</span><i style="--w:60%"></i></div>
-      <p class="sub caps">En dehors du code</p>
-      <p>Athlétisme — sprint. Technologie, innovation, résolution de problèmes.</p>
-    </div>
-  </article>
-
-  <article class="panel" id="contact">
-    <div class="p-head">
-      <div class="p-row"><span class="caps">07 — Contact</span><button class="close" aria-label="Fermer"></button></div>
-      <h2>Franchissons la ligne ensemble.</h2>
-    </div>
-    <div class="p-body">
-      <div class="links">
-        <a href="mailto:bokopoloyahliou@gmail.com">bokopoloyahliou@gmail.com</a>
-        <a href="https://github.com/FreshyayaBePro" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://www.linkedin.com/in/yahliou-bokopolo-01b14a413" target="_blank" rel="noopener">LinkedIn</a>
-      </div>
-      <p>Atakpamé, Togo</p>
-    </div>
-  </article>
 </main>
 
 <div class="dock caps" id="dock">
@@ -356,7 +248,7 @@
   <button id="next" aria-label="Rubrique suivante">→</button>
 </div>
 
-<footer class="caps">© 2026 Bokopolo Yahliou Phinéas</footer>
+<footer class="caps" id="footer"></footer>
 <div class="grain" aria-hidden="true"></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <filter id="liquid" x="-10%" y="-25%" width="120%" height="150%" color-interpolation-filters="sRGB">
@@ -367,24 +259,97 @@
 
 <script src="vendor/three.min.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';s.onload=function(){window.__boot&&window.__boot()};s.onerror=function(){window.__boot&&window.__boot()};document.head.appendChild(s);"></script>
 <script>
+/* Charge le contenu puis lance le site. En aperçu (admin), on lit le brouillon local. */
 (function(){
+  var preview = /[?&]preview=1/.test(location.search), draft = null;
+  if (preview){ try{ draft = JSON.parse(localStorage.getItem('portfolio:preview') || 'null'); }catch(e){} }
+  if (draft){ window.PORTFOLIO = draft; window.addEventListener('DOMContentLoaded', function(){ window.__run(); }); return; }
+  var sc = document.createElement('script');
+  sc.src = 'content.js?v=' + Date.now();          // jamais de version en cache après une publication
+  sc.onload = sc.onerror = function(){ window.__run(); };
+  document.head.appendChild(sc);
+})();
+</script>
+<script>
+window.__run = function(){
 'use strict';
 
-/* ================= DONNÉES ================= */
-var SECTIONS = [
-  {id:'profil',      label:'Profil',      a:'#22d3ee', b:'#1d4ed8', size:2.2, orbit:14, angle:0.4, speed:.050, moons:1},
-  {id:'competences', label:'Compétences', a:'#a78bfa', b:'#5b21b6', size:2.9, orbit:22, angle:2.3, speed:.038, moons:6, ring:true},
-  {id:'projets',     label:'Projets',     a:'#ff5d8f', b:'#ff9f43', size:2.6, orbit:30, angle:4.4, speed:.030, moons:6},
-  {id:'philosophie', label:'Philosophie', a:'#ffd166', b:'#e85d04', size:1.8, orbit:37, angle:1.2, speed:.025, moons:0},
-  {id:'objectifs',   label:'Objectifs',   a:'#3ddc97', b:'#0e7490', size:2.1, orbit:44, angle:3.3, speed:.021, moons:3},
-  {id:'langues',     label:'Langues',     a:'#ff8a5b', b:'#c1272d', size:2.4, orbit:51, angle:5.5, speed:.018, moons:5, ring:true},
-  {id:'contact',     label:'Contact',     a:'#e0f2fe', b:'#38bdf8', size:2.0, orbit:58, angle:0.0, speed:.015, moons:3}
-];
-
+/* ================= DONNÉES (content.js) ================= */
+var DATA = window.PORTFOLIO || {site:{}, sections:[]};
+var PREVIEW = /[?&]preview=1/.test(location.search);   // aperçu dans l'admin : pas de long vol d'arrivée
+var SITE = DATA.site || {};
 var $ = function(s){ return document.querySelector(s); };
 var body = document.body;
-var panels = {};
-SECTIONS.forEach(function(s){ panels[s.id] = document.getElementById(s.id); panels[s.id].style.setProperty('--c', s.a); });
+
+function esc(t){ return String(t == null ? '' : t).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function rich(t){ return esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'); }   // **gras** autorisé
+function paras(t){ return String(t || '').split(/\n\s*\n/).filter(function(x){ return x.trim(); }).map(function(x){ return '<p>' + rich(x.trim()) + '</p>'; }).join(''); }
+function safeUrl(u){
+  u = String(u || '').trim(); if (!u) return '';
+  if (/^(https?:|mailto:|tel:)/i.test(u)) return u;
+  if (/^[^\s@\/]+@[^\s@\/]+\.[^\s@\/]+$/.test(u)) return 'mailto:' + u;
+  if (/^[+\d][\d\s.-]{5,}$/.test(u)) return 'tel:' + u.replace(/[\s.-]/g, '');
+  if (/^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(u)) return 'https://' + u;
+  return '';
+}
+function linkAttrs(u){ return /^https?:/i.test(u) ? ' target="_blank" rel="noopener"' : ''; }
+function color(c, d){ return /^#[0-9a-f]{6}$/i.test(c || '') ? c : d; }
+function pad(n){ return (n < 10 ? '0' : '') + n; }
+
+var BLOCK = {
+  text: function(b){ return paras(b.text); },
+  quote: function(b){ return '<blockquote>' + rich(b.text) + '</blockquote>'; },
+  subtitle: function(b){ return '<p class="sub caps">' + esc(b.text) + '</p>'; },
+  rows: function(b){ return '<dl class="rows">' + (b.items || []).map(function(it){ return '<div><dt class="caps">' + esc(it.label) + '</dt><dd>' + rich(it.text) + '</dd></div>'; }).join('') + '</dl>'; },
+  projects: function(b){ return (b.items || []).map(function(it){
+    var u = safeUrl(it.url), name = u ? '<a href="' + esc(u) + '"' + linkAttrs(u) + '>' + esc(it.name) + '</a>' : esc(it.name);
+    return '<div class="proj"><header><h3>' + name + '</h3>' + (it.status ? '<span class="caps' + (it.live ? ' live' : '') + '">' + esc(it.status) + '</span>' : '') + '</header>' +
+      (it.text ? '<p>' + rich(it.text) + '</p>' : '') + (it.stack ? '<small>' + esc(it.stack) + '</small>' : '') + '</div>';
+  }).join(''); },
+  list: function(b){ return '<ul class="goals">' + (b.items || []).map(function(it){ return '<li><p>' + rich(it.text) + '</p></li>'; }).join('') + '</ul>'; },
+  bars: function(b){ return (b.items || []).map(function(it){ var v = Math.max(0, Math.min(100, +it.value || 0)); return '<div class="bar"><span>' + esc(it.label) + '</span><i style="--w:' + v + '%"></i></div>'; }).join(''); },
+  links: function(b){ return '<div class="links">' + (b.items || []).map(function(it){ var u = safeUrl(it.url); return u ? '<a href="' + esc(u) + '"' + linkAttrs(u) + '>' + esc(it.label || u.replace(/^mailto:|^tel:|^https?:\/\//, '')) + '</a>' : ''; }).join('') + '</div>'; }
+};
+
+// textes du site
+document.title = SITE.title || SITE.logo || 'Portfolio';
+var metaDesc = document.querySelector('meta[name="description"]'); if (metaDesc && SITE.description) metaDesc.content = SITE.description;
+$('#brand').textContent = SITE.logo || '';
+$('#tagline').textContent = SITE.tagline || '';
+$('#name').innerHTML = '<span><b>' + esc(SITE.nameLine1) + '</b></span><span><b>' + esc(SITE.nameLine2) + (SITE.nameAccent ? ' <em>' + esc(SITE.nameAccent) + '</em>' : '') + '</b></span>';
+$('#intro').textContent = SITE.intro || '';
+$('#enter-label').textContent = SITE.enter || 'Entrer';
+$('#footer').textContent = SITE.footer || '';
+
+// une section = un panneau + une planète ; l'orbite dépend de la position dans la liste
+var PALETTE = [['#22d3ee','#1d4ed8'],['#a78bfa','#5b21b6'],['#ff5d8f','#ff9f43'],['#ffd166','#e85d04'],['#3ddc97','#0e7490'],['#ff8a5b','#c1272d'],['#e0f2fe','#38bdf8'],['#f472b6','#7e22ce'],['#a3e635','#15803d'],['#fda4af','#be123c']];
+var usedIds = {};
+var SECTIONS = (DATA.sections || []).map(function(sec, i){
+  var id = String(sec.id || sec.label || 'section').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'section';
+  while (usedIds[id] || document.getElementById(id)) id += '-' + (i+1);
+  usedIds[id] = 1;
+  var pal = PALETTE[i % PALETTE.length], cols = sec.colors || [];
+  var orbit = 14 + i * 7.4;
+  return {
+    id:id, label:sec.label || 'Section', heading:sec.heading || '', blocks:sec.blocks || [],
+    a:color(cols[0], pal[0]), b:color(cols[1], pal[1]),
+    size:Math.max(1, Math.min(4, +sec.size || 2.2)), ring:!!sec.ring,
+    moons:Math.max(0, Math.min(10, sec.moons == null ? 2 : (+sec.moons || 0))),
+    orbit:orbit, angle:(i * 2.39996) % (Math.PI * 2), speed:.7 / orbit
+  };
+});
+var OUTER = SECTIONS.length ? SECTIONS[SECTIONS.length - 1].orbit : 14;
+
+var panels = {}, main = $('#main');
+SECTIONS.forEach(function(s, i){
+  var el = document.createElement('article');
+  el.className = 'panel'; el.id = s.id; el.style.setProperty('--c', s.a);
+  el.innerHTML = '<div class="p-head"><div class="p-row"><span class="caps">' + pad(i+1) + ' — ' + esc(s.label) + '</span><button class="close" aria-label="Fermer"></button></div>' +
+    '<h2>' + esc(s.heading) + '</h2></div><div class="p-body">' +
+    (s.blocks.map(function(b){ return BLOCK[b.type] ? BLOCK[b.type](b) : ''; }).join('') || '<p class="empty">Section vide pour l\'instant.</p>') + '</div>';
+  main.appendChild(el); panels[s.id] = el;
+});
+if (!SECTIONS.length) $('#start').style.display = 'none';
 
 /* ================= UI ================= */
 var nav = $('#nav'), labelsEl = $('#labels'), where = $('#where'), modeBtn = $('#mode');
@@ -412,7 +377,7 @@ function setUI(i){
   });
   if (i >= 0){
     body.classList.remove('home');
-    where.textContent = '0' + (i+1) + ' / 0' + SECTIONS.length;
+    where.textContent = pad(i+1) + ' / ' + pad(SECTIONS.length);
     navBtns[i].scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'});
     try{ history.replaceState(null, '', '#' + SECTIONS[i].id); }catch(e){}
   } else {
@@ -428,10 +393,10 @@ function overview(home){
   setUI(-1); body.classList.toggle('home', !!home); if (api) api.overview();
 }
 function step(d){
-  var n = SECTIONS.length;
+  var n = SECTIONS.length; if (!n) return;
   focus(current < 0 ? (d > 0 ? 0 : n-1) : (current + d + n) % n);
 }
-$('#start').addEventListener('click', function(){ focus(0); });
+$('#start').addEventListener('click', function(){ if (SECTIONS.length) focus(0); });
 $('#brand').addEventListener('click', function(){
   if (body.classList.contains('flat')) window.scrollTo({top:0, behavior:'smooth'}); else overview(true);
 });
@@ -569,7 +534,7 @@ window.__boot = function(){
   else {
     var h = location.hash.slice(1);
     var idx = SECTIONS.findIndex(function(s){ return s.id === h; });
-    if (idx >= 0) setTimeout(function(){ focus(idx); }, 1200);
+    if (idx >= 0) setTimeout(function(){ focus(idx); }, PREVIEW ? 150 : 1200);
   }
   $('#loader').classList.add('done');
   setTimeout(function(){ body.classList.add('ready'); }, 350);
@@ -779,7 +744,7 @@ function initScene(){
   var belt = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0), new THREE.MeshStandardMaterial({color:0x9a9a9a, roughness:.9, flatShading:true}), beltCount);
   var dummy = new THREE.Object3D();
   for (var b=0; b<beltCount; b++){
-    var ba = Math.random()*Math.PI*2, br = 68 + Math.random()*12 + (Math.random()-.5)*4;
+    var ba = Math.random()*Math.PI*2, br = OUTER + 10 + Math.random()*12 + (Math.random()-.5)*4;
     dummy.position.set(Math.cos(ba)*br, (Math.random()-.5)*3, Math.sin(ba)*br);
     dummy.rotation.set(Math.random()*6, Math.random()*6, Math.random()*6);
     dummy.scale.setScalar(.08 + Math.random()*Math.random()*.5);
@@ -788,13 +753,13 @@ function initScene(){
   scene.add(belt);
 
   /* ---- caméra : orbite amortie ---- */
-  var cur  = {t:new THREE.Vector3(0,0,0), r:1500, th:-2.2, ph:.5, ox:0, oy:0};   // on arrive de très loin
+  var cur  = {t:new THREE.Vector3(0,0,0), r:PREVIEW ? 170 : 1500, th:-2.2, ph:.5, ox:0, oy:0};   // on arrive de très loin
   var goal = {t:new THREE.Vector3(0,0,0), r:92,   th:.5,   ph:1.1, ox:0, oy:0};
   var focused = -1, lastInput = 0, orbitFactor = 1;
   var PH_MIN = .15, PH_MAX = Math.PI - .15, R_MIN = 5, R_MAX = 620;
 
   function mobile(){ return W <= 820; }
-  function overviewRadius(){ return 92 * Math.max(1, 1.25 / (W/H)); }
+  function overviewRadius(){ return 92 * Math.max(1, (OUTER + 22) / 80) * Math.max(1, 1.25 / (W/H)); }
   function setOffsets(){
     if (focused >= 0){
       if (mobile()){ goal.ox = 0; goal.oy = H*.29; }
@@ -921,7 +886,8 @@ function initScene(){
     orbitFactor += ((focused >= 0 ? 0 : 1) - orbitFactor) * Math.min(1, dt*3);
     sunU.uTime.value = t;
     sun.rotation.y = t*.05; rays1.material.rotation = t*.02; rays2.material.rotation = -t*.03;
-    rays1.material.opacity = .42 + Math.sin(t*.7)*.1; rays2.material.opacity = .34 + Math.sin(t*1.1 + 2)*.1; sunHalo.scale.setScalar(24 + Math.sin(t*.9)*.8);
+    var rf = .25 + .75*orbitFactor;   // rayons atténués quand on est zoomé sur une planète
+    rays1.material.opacity = (.42 + Math.sin(t*.7)*.1)*rf; rays2.material.opacity = (.34 + Math.sin(t*1.1 + 2)*.1)*rf; sunHalo.scale.setScalar(24 + Math.sin(t*.9)*.8);
     for (var i=0; i<planets.length; i++){
       var p = planets[i];
       p.angle += p.s.speed * dt * orbitFactor;
@@ -949,7 +915,7 @@ function initScene(){
       right.set(-fwd.z, 0, fwd.x);
       var sp = Math.max(8, goal.r*.7) * dt;
       goal.t.addScaledVector(fwd, mz*sp).addScaledVector(right, mx*sp);
-      if (goal.t.length() > 200) goal.t.setLength(200);
+      if (goal.t.length() > OUTER + 140) goal.t.setLength(OUTER + 140);
     }
     if (focused >= 0) goal.t.copy(planets[focused].group.position);
     else if (!nPointers && now - lastInput > 3500) goal.th += dt * .03;   // dérive douce au repos
@@ -1011,8 +977,8 @@ function initScene(){
 }
 
 if (window.THREE) window.__boot();
-else window.addEventListener('load', function(){ setTimeout(function(){ window.__boot(); }, window.THREE ? 0 : 2500); });
-})();
+else setTimeout(function(){ window.__boot(); }, 2500);   // Three.js charge encore depuis le CDN (son onload appelle aussi __boot)
+};
 </script>
 </body>
 </html>
