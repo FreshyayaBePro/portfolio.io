@@ -135,7 +135,7 @@ window.PORTFOLIO = {
               "live": false,
               "text": "Mini-jeu créé pour la journée portes ouvertes de mon institut.",
               "stack": "HTML · CSS · JavaScript",
-              "url": ""
+              "url": "https://freshyayabepro.github.io/Jeu-memoire-2.0/"
             }
           ]
         }
