@@ -103,7 +103,7 @@ window.PORTFOLIO = {
               "live": true,
               "text": "Une IA qui traduit la langue des signes en texte vocalisé.",
               "stack": "IA · Traitement du signal",
-              "url": ""
+              "url": "https://signai-bhyj.onrender.com"
             },
             {
               "name": "Coffre à secrets",
